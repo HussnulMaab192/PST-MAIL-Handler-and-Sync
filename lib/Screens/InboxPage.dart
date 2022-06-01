@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_string_interpolations
 
 import 'dart:async';
 import 'dart:ffi';
@@ -30,6 +30,10 @@ class InboxPage extends StatefulWidget {
 
 class _InboxPageState extends State<InboxPage> {
   TextEditingController folderController = TextEditingController();
+  late int folderId, accId;
+  late String folderName;
+
+  late String parentFolder;
   String selection = "Select All";
   bool menu = false;
   List<Email> mails = [];
@@ -100,14 +104,16 @@ class _InboxPageState extends State<InboxPage> {
   }
 
   void moveEmails(String fid) {
-    // db.insertActionData(db, "mail", "move", "Drafts", "", DateTime.now());
     List<Email> selectEmail =
         mails.where((element) => element.Selected).toList();
     mails.removeWhere((element) => element.Selected);
     for (var element in selectEmail) {
       db.UpdateEmail(int.parse(fid), element.mid);
+      db.insertActionData(
+          "mail", "move", "${element.fid.toString()}", "$fid", DateTime.now());
     }
-    //db.insertAccountData(,"mail","mail","move","$fid");
+
+    //db.insertAccountData("mail","mail","move","$fid");
     setState(() {});
   }
 
@@ -134,6 +140,8 @@ class _InboxPageState extends State<InboxPage> {
     mails.removeWhere((element) => element.Selected);
     for (var element in selectEmail) {
       db.deleteMail(element.mid);
+      db.insertActionData(
+          "mail", "delete", "${element.fid.toString()}", "", DateTime.now());
     }
     setState(() {});
   }
@@ -271,7 +279,34 @@ class _InboxPageState extends State<InboxPage> {
                 )
               ],
             ),*/
-            dbf.length > 0 ? folderM(dbf.first) : Text(""),
+            for (int i = 0; i < dbf.length; i++)
+              Row(
+                children: [
+                  Expanded(child: Folders(dbf[i])),
+                  IconButton(
+                    //    onPressed: () {},
+                    onPressed: () {
+                      //createNewFolder(context);
+                      folderId = 77777;
+                      folderName = folderController.text.toString();
+                      folderName = "My friendz";
+
+                      accId = 1;
+                      parentFolder = dbf[i].name!;
+//errorlenz
+                      db.insertData(folderId, folderName, accId, parentFolder);
+                      //Pop up Folder
+                      // insert DB
+                      // Parent folder dbf[i].name
+                      // folder name extract from popup menu
+                      // insert into fodler table
+                      print(dbf[i].name);
+                    },
+
+                    icon: Icon(Icons.create_new_folder),
+                  )
+                ],
+              ),
             GestureDetector(
               // child: treee,
               child: const ListTile(
@@ -506,8 +541,7 @@ class _InboxPageState extends State<InboxPage> {
                   title: "Create",
                   background: AppColors.blue,
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const InboxPage()));
+                    //   db.insertData(folderController.text.toString());
                   }),
             )
           ]),
@@ -585,6 +619,12 @@ class _InboxPageState extends State<InboxPage> {
               leading: Icon(Icons.delete_forever_rounded), title: Text("junk")),
         ),
       ]),
+    );
+  }
+
+  Widget Folders(DropBoxFolders f) {
+    return ExpansionTile(
+      title: Text(f.name ?? ""),
     );
   }
 }

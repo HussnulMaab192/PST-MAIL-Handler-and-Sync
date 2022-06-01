@@ -1,9 +1,5 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:path/path.dart';
 
 class FilePages extends StatefulWidget {
@@ -61,7 +57,7 @@ class _FilePagesState extends State<FilePages> {
               alignment: Alignment.center,
               width: double.infinity,
               decoration: BoxDecoration(
-              //  color: color,
+                //  color: color,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(

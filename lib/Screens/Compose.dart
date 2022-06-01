@@ -86,7 +86,6 @@ class _ComposeState extends State<Compose> {
               // print("To path: ${newFile.path}");
               openFiles(result.files);
             },
-        
           ),
           IconButton(
             icon: const Icon(

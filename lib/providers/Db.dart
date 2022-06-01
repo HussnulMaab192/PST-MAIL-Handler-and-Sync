@@ -73,12 +73,21 @@ class DBHandler {
         await insertAccountData(db);
         await insertFolderData(db);
         await insertContactsData(db);
+
         await insertEmailData(db);
       }).then((value) {
         print('_db is intialized... ');
         _db = value;
       });
     }
+  }
+
+  Future<void> insertData(
+      int id, String name, int accId, String parentName) async {
+    print('Executing insertion command...');
+    await _db!.rawInsert(
+        "insert into folder values ('$id', '$name', '$accId','$parentName')");
+    print('Command executed');
   }
 
 //create table Action(Action_id int primary key,Action_Type varchar(50),AValue varchar(60),field1_S varchar(50),field2_D varchar(50),TDatetime datetime2)
@@ -226,11 +235,11 @@ class DBHandler {
     print('Command executed');
   }
 
-  Future<void> insertActionData(Database db, String action_type, String Avalue,
+  Future<void> insertActionData(String action_type, String Avalue,
       String source_field, String dest_field, DateTime TDatetime) async {
     print('Executing insertion command in Contact Table...');
 
-    await db.rawInsert(
+    await _db!.rawInsert(
         "insert into Action values ('$action_type','$Avalue', '$source_field', '$dest_field', '$TDatetime')");
 
     print('Command executed');
@@ -263,6 +272,15 @@ class DBHandler {
 
     String query = "Update Email set fid=$fid where mid =$eid";
     await _db!.rawUpdate(query);
+  }
+
+  Future<int> getNextid(String tablename) async {
+    var result = await _db!.rawQuery("select * from $tablename ");
+    int id = 1;
+    result.forEach((element) {
+      id++;
+    });
+    return id;
   }
 
   Future<List<DropBoxFolders>> GetFolder() async {
