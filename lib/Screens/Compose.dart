@@ -20,13 +20,13 @@ class Compose extends StatefulWidget {
 }
 
 class _ComposeState extends State<Compose> {
+  //object creation for FilePages
   TextEditingController fromController = TextEditingController();
   TextEditingController toController = TextEditingController();
   TextEditingController ccController = TextEditingController();
   TextEditingController bccController = TextEditingController();
   TextEditingController subController = TextEditingController();
   final TextEditingController _textEditingController = TextEditingController();
-
   void openFile(PlatformFile file) {
     OpenFile.open(file.path!);
   }
@@ -38,10 +38,11 @@ class _ComposeState extends State<Compose> {
     return File(file.path!).copy(newFile.path);
   }
 
-  void openFiles(List<PlatformFile> files) =>
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) =>
-              FilePages(files: files, onOpenedFile: openFile)));
+  void openFiles(List<PlatformFile> files) => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => FilePages(files: files, onOpenedFile: openFile),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -184,6 +185,7 @@ class _ComposeState extends State<Compose> {
             ),
           ),
         ),
+        /////////
       ]),
     );
   }
