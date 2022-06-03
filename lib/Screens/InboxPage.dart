@@ -42,6 +42,7 @@ class _InboxPageState extends State<InboxPage> {
   // List<Map<String, dynamic>> _foundUsers = [];
   late DBHandler db;
   int c = 0;
+  Color starColor = Colors.white;
   Timer? t;
   void handleTimeout() {
     initData();
@@ -83,8 +84,7 @@ class _InboxPageState extends State<InboxPage> {
 
   void callFunction() {}
   void initState() {
-    // _foundUsers = mails.cast<Map<String, dynamic>>();
-    t = Timer.periodic(const Duration(milliseconds: 300), (timer) {
+    t = Timer.periodic(const Duration(milliseconds: 200), (timer) {
       handleTimeout();
     });
     // final timer = Timer(
@@ -145,10 +145,9 @@ class _InboxPageState extends State<InboxPage> {
             ),
             IconButton(
               onPressed: () {
-                for (int i = 0; i < dbf.length; i++) {
-                  parentFolder = dbf[i].name!;
+                {
+                  //parentFolder = dbf[i].name!;
                   createNewFolder(context, parentFolder, folderId);
-                  
                 }
               },
               icon: const Icon(Icons.create_new_folder),
@@ -292,7 +291,7 @@ class _InboxPageState extends State<InboxPage> {
                         //  accId = 1;
                         parentFolder = dbf[i].name!;
                         createNewFolder(context, parentFolder, folderId);
-//errorlenz
+                        //errorlenz
                         //   db.insertData(777, folderName, accId, parentFolder);
                         //Pop up Folder
                         // insert DB
@@ -524,8 +523,17 @@ class _InboxPageState extends State<InboxPage> {
                                     fontSize: 12,
                                   ),
                                 ),
-                                trailing:
-                                    const Icon(Icons.star_border_outlined),
+                                trailing: IconButton(
+                                  icon: Icon(
+                                    Icons.star_border_outlined,
+                                    color: starColor,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      starColor = Colors.yellow;
+                                    });
+                                  },
+                                ),
                               ),
                             ),
                           );
@@ -585,14 +593,14 @@ class _InboxPageState extends State<InboxPage> {
     );
   }
 
-  Widget folderM(DropBoxFolders folder) {
-    return ExpansionTile(
-      title: Text(folder.name ?? ""),
-      children: [
-        for (int i = 0; i < folder.childfodlers.length; i++) folderM(folder)
-      ],
-    );
-  }
+  // Widget folderM(DropBoxFolders folder) {
+  //   return ExpansionTile(
+  //     title: Text(folder.name ?? ""),
+  //     children: [
+  //       for (int i = 0; i < folder.childfodlers.length; i++) folderM(folder)
+  //     ],
+  //   );
+  // }
 
   //   Widget folderWidget(List<DropBoxFolders> folder,int index) {
   //   return ExpansionTile(
@@ -658,19 +666,6 @@ class _InboxPageState extends State<InboxPage> {
   Widget Folders(DropBoxFolders f) {
     return ExpansionTile(
       title: Text(f.name ?? ""),
-      children: [
-        Row(
-          children: [
-            Expanded(child: ExpansionTile(title: Text("${f.childfodlers}"))),
-            Expanded(
-              child: IconButton(
-                icon: const Icon(Icons.create_new_folder),
-                onPressed: () {},
-              ),
-            )
-          ],
-        )
-      ],
     );
   }
 }

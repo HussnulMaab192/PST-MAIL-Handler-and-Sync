@@ -15,11 +15,11 @@ class AdvanceSetting extends StatefulWidget {
 }
 
 class _AdvanceSettingState extends State<AdvanceSetting> {
-  TextEditingController userController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController pswdController = TextEditingController();
-  TextEditingController cnfrmController = TextEditingController();
+  TextEditingController incomingPortController = TextEditingController();
+  TextEditingController outgoingPortController = TextEditingController();
+
   String selectedValue = "IMAP";
+  String selectedValue2 = "IMAP";
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -43,8 +43,8 @@ class _AdvanceSettingState extends State<AdvanceSetting> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.15,
                 ),
-                buildTextField(
-                    Icons.email, "Incoming Port", false, true, emailController),
+                buildTextField(Icons.email, "Incoming Port", false, true,
+                    incomingPortController),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(28, 0, 0, 0),
                   child: Row(
@@ -62,19 +62,31 @@ class _AdvanceSettingState extends State<AdvanceSetting> {
                       const SizedBox(
                         width: 30,
                       ),
-                      DropdownButton(
-                          value: selectedValue,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedValue = newValue!;
-                            });
-                          },
-                          items: dropdownItems)
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Theme(
+                          data: Theme.of(context)
+                              .copyWith(canvasColor: AppColors.blue),
+                          child: DropdownButton(
+                              value: selectedValue,
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedValue = newValue!;
+                                });
+                              },
+                              items: dropdownItems),
+                        ),
+                      )
                     ],
                   ),
                 ),
-                buildTextField(
-                    Icons.email, "Outgoing Port", false, true, emailController),
+                const SizedBox(
+                  height: 5,
+                ),
+                buildTextField(Icons.email, "Outgoing Port", false, true,
+                    outgoingPortController),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(28, 0, 0, 0),
                   child: Row(
@@ -92,14 +104,18 @@ class _AdvanceSettingState extends State<AdvanceSetting> {
                       const SizedBox(
                         width: 30,
                       ),
-                      DropdownButton(
-                          value: selectedValue,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedValue = newValue!;
-                            });
-                          },
-                          items: dropdownItems)
+                      Theme(
+                        data: Theme.of(context)
+                            .copyWith(canvasColor: AppColors.blue),
+                        child: DropdownButton(
+                            value: selectedValue2,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedValue2 = newValue!;
+                              });
+                            },
+                            items: dropdownItems),
+                      )
                     ],
                   ),
                 ),

@@ -39,13 +39,6 @@ class DBHandler {
       openDatabase(dbpath, version: 1,
           onCreate: (Database db, int version) async {
         print('Creating table');
-        //String query = '''
-        // create table account(ac_id int primary key ,acc_type varchar(40),acc_email varchar(50), acc_pass varchar(50));
-        // create table folder(fid int primary key ,fname varchar(50),acc_id int foreign key references account);
-        // create table contacts(contact_id int primary key ,first_name varchar(60),last_name varchar(60), picture varchar(1000),acc_id int foreign key references account);
-        // create table Email(mid int primary key ,fid int foreign key references folder ,sender varchar(60) ,subject varchar(1000),mData varchar(1000), body varchar(2000));
-        // create table Action(action_id int primary key ,action_type varchar(60) ,action_value varchar(60),source_field varchar(50),destination_field varchar(1000), TDatetime datetime);
-        // ''';
         String query =
             "create table account(ac_id int primary key ,acc_type varchar(40),acc_email varchar(50), acc_pass varchar(50))";
 

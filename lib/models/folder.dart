@@ -1,7 +1,6 @@
 class DropBoxFolders {
   String? name;
   List<String> childfodlers = [];
-  
 }
 
 class Folder {

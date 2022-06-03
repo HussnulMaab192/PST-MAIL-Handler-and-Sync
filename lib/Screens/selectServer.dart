@@ -52,26 +52,23 @@ class _SelectServerState extends State<SelectServer> {
                               ),
                               primary: Colors.white,
                               backgroundColor: Colors.transparent),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    const ConfigureAccount()));
+                          },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
+                            children: const [
                               SizedBox(
                                 height: 40,
                                 child: Image(
                                     image: ExactAssetImage(
                                         "lib/assets/Images/google.png")),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ConfigureAccount()));
-                                },
-                                child: Text(
-                                  "Gmail",
-                                  style: TextStyle(fontSize: 25),
-                                ),
+                              Text(
+                                "Gmail",
+                                style: TextStyle(fontSize: 25),
                               )
                             ],
                           )),
@@ -88,26 +85,23 @@ class _SelectServerState extends State<SelectServer> {
                               ),
                               primary: Colors.white,
                               backgroundColor: Colors.transparent),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    const ConfigureAccount()));
+                          },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
+                            children: const [
                               SizedBox(
                                 height: 40,
                                 child: Image(
                                     image: ExactAssetImage(
                                         "lib/assets/Images/Yahoo.png")),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ConfigureAccount()));
-                                },
-                                child: Text(
-                                  "Yahoo",
-                                  style: TextStyle(fontSize: 25),
-                                ),
+                              Text(
+                                "Yahoo",
+                                style: TextStyle(fontSize: 25),
                               )
                             ],
                           )), // ignore: prefer_const_constructors
@@ -124,26 +118,23 @@ class _SelectServerState extends State<SelectServer> {
                               ),
                               primary: Colors.white,
                               backgroundColor: Colors.transparent),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    const ConfigureAccount()));
+                          },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
+                            children: const [
                               SizedBox(
                                 height: 40,
                                 child: Image(
                                     image: ExactAssetImage(
                                         "lib/assets/Images/outlook1.png")),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ConfigureAccount()));
-                                },
-                                child: Text(
-                                  "Outlook",
-                                  style: TextStyle(fontSize: 25),
-                                ),
+                              Text(
+                                "Outlook",
+                                style: TextStyle(fontSize: 25),
                               )
                             ],
                           )), // ignore: prefer_const_constructors

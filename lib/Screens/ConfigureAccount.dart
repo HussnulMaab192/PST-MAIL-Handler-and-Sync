@@ -8,6 +8,8 @@ import 'package:pst1/Screens/textFieldBuilder.dart';
 import 'package:pst1/Styles/app_colors.dart';
 import 'package:pst1/Widgets/ButtonClass.dart';
 
+import '../providers/Db.dart';
+
 class ConfigureAccount extends StatefulWidget {
   const ConfigureAccount({Key? key}) : super(key: key);
 
@@ -17,10 +19,10 @@ class ConfigureAccount extends StatefulWidget {
 
 class _ConfigureAccountState extends State<ConfigureAccount> {
   var selectedAccountType;
-  TextEditingController userController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController pswdController = TextEditingController();
-  TextEditingController cnfrmController = TextEditingController();
+  TextEditingController mailAddressController = TextEditingController();
+  TextEditingController IncomingMailServerController = TextEditingController();
+  TextEditingController OutgoingMailServerController = TextEditingController();
+  TextEditingController userNameController = TextEditingController();
   String selectedValue = "IMAP";
   @override
   Widget build(BuildContext context) {
@@ -154,8 +156,8 @@ class _ConfigureAccountState extends State<ConfigureAccount> {
           children: [
             Column(
               children: [
-                buildTextField(
-                    Icons.email, "Mail Adress", false, true, emailController),
+                buildTextField(Icons.email, "Mail Adress", false, true,
+                    mailAddressController),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(18, 10, 0, 0),
                   child: Row(
@@ -200,9 +202,9 @@ class _ConfigureAccountState extends State<ConfigureAccount> {
                   ),
                 ),
                 buildTextField(Icons.email, "Incoming Mail Server", false, true,
-                    emailController),
+                    IncomingMailServerController),
                 buildTextField(Icons.email, "Outgoing Mail Server", false, true,
-                    emailController),
+                    OutgoingMailServerController),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(18, 10, 0, 0),
                   child: Row(
@@ -222,7 +224,7 @@ class _ConfigureAccountState extends State<ConfigureAccount> {
                   ),
                 ),
                 buildTextField(
-                    Icons.email, "User Name", false, true, emailController),
+                    Icons.email, "User Name", false, true, userNameController),
                 // buildTextField(
                 //     Icons.email, "Password  ", false, true, emailController),
                 Row(
@@ -234,12 +236,13 @@ class _ConfigureAccountState extends State<ConfigureAccount> {
                           height: 50,
                           width: MediaQuery.of(context).size.width - 250,
                           child: ButtonClass(
-                            title: "Next",
-                            background: AppColors.blue,
-                            onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) => const InboxPage())),
-                          )),
+                              title: "Next",
+                              background: AppColors.blue,
+                              onTap: () async {
+                                await DBHandler.getInstnace();
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => const InboxPage()));
+                              })),
                     )
                   ],
                 ),

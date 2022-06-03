@@ -71,8 +71,6 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void initState() {
-    _foundUsers = mails.cast<Map<String, dynamic>>();
-
     final timer = Timer(
       const Duration(milliseconds: 300),
       () {
@@ -98,7 +96,7 @@ class _SearchPageState extends State<SearchPage> {
   //     _foundUsers = results;
   //   });
   // }
-
+  List<Email> mailsOnSearch = [];
   List<Email> mails = [];
   @override
   Widget build(BuildContext context) {
@@ -120,7 +118,7 @@ class _SearchPageState extends State<SearchPage> {
                                       builder: ((builder) => bottomSheet()),
                                     )),
                                 child: Row(
-                                  children: [
+                                  children: const [
                                     Icon(
                                       Icons.move_to_inbox,
                                       color: Colors.black,
@@ -139,7 +137,7 @@ class _SearchPageState extends State<SearchPage> {
                                   delete();
                                 },
                                 child: Row(
-                                  children: [
+                                  children: const [
                                     Icon(
                                       Icons.delete,
                                       color: Colors.black,
@@ -153,7 +151,7 @@ class _SearchPageState extends State<SearchPage> {
                               )),
                               PopupMenuItem(
                                   child: Row(
-                                children: [
+                                children: const [
                                   Icon(
                                     Icons.mark_unread_chat_alt,
                                     color: Colors.black,
@@ -189,11 +187,11 @@ class _SearchPageState extends State<SearchPage> {
                                 },
                                 child: Row(
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.move_to_inbox,
                                       color: Colors.black,
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
                                     Text(selection)
@@ -201,7 +199,7 @@ class _SearchPageState extends State<SearchPage> {
                                 ),
                               )),
                             ],
-                        child: Icon(Icons.more_vert)),
+                        child: const Icon(Icons.more_vert)),
                   )
                 : Container(),
           ],
@@ -220,10 +218,10 @@ class _SearchPageState extends State<SearchPage> {
             elevation: 10,
             onTap: (int i) {
               if (i == 0) {
-                Navigator.push(context,
+                Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => const InboxPage()));
               } else if (i == 1) {
-                Navigator.push(
+                Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const SearchPage()));
@@ -241,8 +239,19 @@ class _SearchPageState extends State<SearchPage> {
                 child: TextField(
                   onChanged: (value) {
                     setState(() {
-                      mails = mails
-                          .where((element) => element.subject.contains(value))
+                      mailsOnSearch = mails
+                          .where((element) =>
+                              element.subject.contains(value) ||
+                              element.subject
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()) ||
+                              element.body.contains(value) ||
+                              element.body
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()) ||
+                              element.sender
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()))
                           .toList();
                     });
                   },
@@ -257,55 +266,73 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 ),
               ),
-
-              ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  // scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  // physics: const NeverScrollableScrollPhysics(),
-                  itemCount: mails.length,
-                  itemBuilder: ((context, index) {
-                    return InkWell(
-                      key: Key(mails[index].mid.toString()),
-                      splashColor: Colors.blue,
-                      onLongPress: () {
-                        setState(() {
-                          mails[index].color = !mails[index].color;
-                          mails[index].Selected = !mails[index].Selected;
-                          if (mails[index].Selected == true) {
-                            c++;
-                            menu = true;
-                          } else {
-                            c--;
-                            if (c == 0) menu = false;
-                          }
-                        });
-                        //  menu = false;
-                      },
-                      child: Card(
-                        color: mails[index].color
-                            ? Colors.white
-                            : Colors.blueAccent,
-                        elevation: 1,
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            child: mails[index].Selected
-                                ? const Icon(Icons.done)
-                                : Text(mails[index].subject[0]),
+              _searchController!.text.isNotEmpty && mailsOnSearch.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Icon(
+                            Icons.search_off_outlined,
+                            size: 50,
+                            color: AppColors.blue,
                           ),
-                          title: Text(
-                              '${mails[index].subject}   ${mails[index].fid} '),
-                          subtitle: Text(
-                            mails[index].body,
-                            style: const TextStyle(
-                              fontSize: 12,
+                          Text("no result found!"),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      // scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      // physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _searchController!.text.isNotEmpty
+                          ? mailsOnSearch.length
+                          : mails.length,
+                      itemBuilder: ((context, index) {
+                        return InkWell(
+                          key: Key(mails[index].mid.toString()),
+                          splashColor: Colors.blue,
+                          onLongPress: () {
+                            setState(() {
+                              mails[index].color = !mails[index].color;
+                              mails[index].Selected = !mails[index].Selected;
+                              if (mails[index].Selected == true) {
+                                c++;
+                                menu = true;
+                              } else {
+                                c--;
+                                if (c == 0) menu = false;
+                              }
+                            });
+                            //  menu = false;
+                          },
+                          child: Card(
+                            color: mails[index].color
+                                ? Colors.white
+                                : Colors.blueAccent,
+                            elevation: 1,
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                child: mails[index].Selected
+                                    ? const Icon(Icons.done)
+                                    : Text(mails[index].subject[0]),
+                              ),
+                              title: Text(_searchController!.text.isNotEmpty
+                                  ? '${mailsOnSearch[index].subject}   ${mailsOnSearch[index].fid} '
+                                  : '${mails[index].subject}   ${mails[index].fid} '),
+                              subtitle: Text(
+                                _searchController!.text.isNotEmpty
+                                    ? mailsOnSearch[index].body
+                                    : mails[index].body,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                              trailing: const Icon(Icons.star_border_outlined),
                             ),
                           ),
-                          trailing: Icon(Icons.star_border_outlined),
-                        ),
-                      ),
-                    );
-                  })),
+                        );
+                      })),
 
               // body: Center(
               //   child: Stack(
@@ -389,7 +416,7 @@ class _SearchPageState extends State<SearchPage> {
     return Container(
       height: 280.0,
       width: MediaQuery.of(context).size.width,
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child:
           Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
         InkWell(
@@ -397,7 +424,7 @@ class _SearchPageState extends State<SearchPage> {
             moveEmails("1");
             //    db.insertActionData(db, "mail", "move", "Drafts", , TDatetime);
           },
-          child: ListTile(
+          child: const ListTile(
             leading: Icon(Icons.drafts_outlined),
             title: Text("Drafts"),
           ),
@@ -406,27 +433,27 @@ class _SearchPageState extends State<SearchPage> {
           onTap: () {
             moveEmails("2");
           },
-          child: ListTile(
+          child: const ListTile(
               leading: Icon(Icons.archive_outlined), title: Text("Archive")),
         ),
         InkWell(
             onTap: () {
               moveEmails("3");
             },
-            child: ListTile(
+            child: const ListTile(
                 leading: Icon(Icons.send_outlined), title: Text("Send"))),
         InkWell(
           onTap: () {
             moveEmails("4");
           },
-          child: ListTile(
+          child: const ListTile(
               leading: Icon(Icons.delete_outlined), title: Text("Delete")),
         ),
         InkWell(
           onTap: () {
             moveEmails("5");
           },
-          child: ListTile(
+          child: const ListTile(
               leading: Icon(Icons.delete_forever_rounded), title: Text("junk")),
         ),
       ]),
