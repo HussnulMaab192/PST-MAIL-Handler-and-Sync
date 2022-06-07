@@ -1,11 +1,13 @@
 class DropBoxFolders {
   String? name;
+  late int pid;
   List<String> childfodlers = [];
 }
 
 class Folder {
   late int fid;
   late String fname;
+
   // ignore: non_constant_identifier_names
   late int acc_id;
 

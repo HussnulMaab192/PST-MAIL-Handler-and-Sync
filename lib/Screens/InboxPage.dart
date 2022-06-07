@@ -4,6 +4,7 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:pst1/Screens/Compose.dart';
 import 'package:pst1/Screens/Tree.dart';
+import 'package:pst1/Screens/reply_mail.dart';
 import 'package:pst1/Screens/selectServer.dart';
 import 'package:pst1/Styles/app_colors.dart';
 import 'package:pst1/Widgets/ButtonClass.dart';
@@ -45,7 +46,6 @@ class _InboxPageState extends State<InboxPage> {
   Color starColor = Colors.white;
   Timer? t;
   void handleTimeout() {
-    initData();
     // callback function
     print('Inside handle time out.. ');
     DBHandler.getInstnace().then((value) {
@@ -75,6 +75,7 @@ class _InboxPageState extends State<InboxPage> {
             });
             setState(() {});
           });
+          initData();
         });
       }
 
@@ -82,9 +83,8 @@ class _InboxPageState extends State<InboxPage> {
     });
   }
 
-  void callFunction() {}
   void initState() {
-    t = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+    t = Timer.periodic(const Duration(milliseconds: 300), (timer) {
       handleTimeout();
     });
     // final timer = Timer(
@@ -483,11 +483,21 @@ class _InboxPageState extends State<InboxPage> {
                     child: ListView.builder(
                         scrollDirection: Axis.vertical,
                         // scrollDirection: Axis.vertical,
-                        // shrinkWrap: true,
+                        //shrinkWrap: true,
                         // physics: const NeverScrollableScrollPhysics(),
                         itemCount: mails.length,
                         itemBuilder: ((context, index) {
                           return InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ReplyMail(
+                                        mid: mails[index].mid,
+                                        fid: mails[index].fid,
+                                        subject: mails[index].subject,
+                                        body: mails[index].body,
+                                        sender: mails[index].sender,
+                                      )));
+                            },
                             key: Key(mails[index].mid.toString()),
                             splashColor: Colors.blue,
                             onLongPress: () {
@@ -523,16 +533,8 @@ class _InboxPageState extends State<InboxPage> {
                                     fontSize: 12,
                                   ),
                                 ),
-                                trailing: IconButton(
-                                  icon: Icon(
-                                    Icons.star_border_outlined,
-                                    color: starColor,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      starColor = Colors.yellow;
-                                    });
-                                  },
+                                trailing: Icon(
+                                  Icons.star_border_outlined,
                                 ),
                               ),
                             ),
@@ -666,6 +668,18 @@ class _InboxPageState extends State<InboxPage> {
   Widget Folders(DropBoxFolders f) {
     return ExpansionTile(
       title: Text(f.name ?? ""),
+      children: [
+        for (int i = 0; i < f.childfodlers.length; i++)
+          Row(
+            children: [
+              Expanded(child: ExpansionTile(title: Text(f.childfodlers[i]))),
+              Expanded(
+                child: IconButton(
+                    onPressed: () {}, icon: Icon(Icons.create_new_folder)),
+              ),
+            ],
+          ),
+      ],
     );
   }
 }

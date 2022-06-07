@@ -10,6 +10,7 @@ class Email {
   late String mData;
   late String body;
   bool Selected = false;
+  bool favourite = false;
   bool color = true;
 
   Email(this.mid, this.fid, this.sender, this.subject, this.mData, this.body);
@@ -22,6 +23,8 @@ class Email {
   String getSubject() => subject;
   String getmData() => mData;
   String getBody() => body;
+  bool isfavourite() => favourite;
+  bool isSelected() => Selected;
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> mp = <String, dynamic>{};

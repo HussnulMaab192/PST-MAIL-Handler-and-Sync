@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pst1/Screens/InboxPage.dart';
+import 'package:pst1/Screens/readmailsfromApi.dart';
 import 'package:pst1/Screens/selectServer.dart';
 import 'package:pst1/Screens/textFieldBuilder.dart';
 
@@ -132,9 +133,11 @@ class _AdvanceSettingState extends State<AdvanceSetting> {
                             title: "OK ",
                             background: AppColors.blue,
                             onTap: () async {
-                              await DBHandler.getInstnace();
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => const InboxPage()));
+                              // await DBHandler.getInstnace();
+                              // Navigator.of(context).push(MaterialPageRoute(
+                              //     builder: (context) => const InboxPage()));
                             })),
                     SizedBox(
                         height: 50,

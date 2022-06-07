@@ -6,6 +6,7 @@ import 'package:sqflite/sqflite.dart';
 import '../models/Mail.dart';
 
 class DBHandler {
+  int mid = 0;
   bool isDbNull() {
     if (_db == null) {
       return true;
@@ -29,6 +30,8 @@ class DBHandler {
 
     return _instance!;
   }
+
+  void mailAutoId() {}
 
   Future<void> _createDB() async {
     if (_db == null) {
@@ -139,7 +142,10 @@ class DBHandler {
     print('Command executed');
   }
 
-  Future<void> insertEmailData(Database db) async {
+  Future<void> insertEmailData(
+    Database db,
+  
+  ) async {
     print('Executing insertion command in Email Table...');
 
     await db.rawInsert(
@@ -271,8 +277,10 @@ class DBHandler {
   Future<int> getNextid(String tablename) async {
     var result = await _db!.rawQuery("select * from $tablename ");
     int id = 1;
+    int mid = 1;
     result.forEach((element) {
       id++;
+      mid++;
     });
     return id;
   }
@@ -280,7 +288,8 @@ class DBHandler {
   Future<List<DropBoxFolders>> GetFolder() async {
     List<DropBoxFolders> folders = [];
     print('fetching data.... ');
-    var result = await _db!.rawQuery("select fname from Folder");
+    var result = await _db!
+        .rawQuery("select fname from Folder where parent_Folder='null'");
     print('Result ::');
     print(result);
     result.forEach((element) {
@@ -308,4 +317,3 @@ class DBHandler {
     return folders;
   }
 }
-// git remote add origin https://github.com/HussnulMaab192/PST-Mail-Handler-and-Sync.git
