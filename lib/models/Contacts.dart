@@ -23,7 +23,7 @@ class Contact {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> mp = <String, dynamic>{};
-    mp['contact_id'] = acc_id;
+    mp['id'] = acc_id;
     mp['first_name'] = first_name;
     mp['last_name'] = last_name;
     mp['picture'] = picture;

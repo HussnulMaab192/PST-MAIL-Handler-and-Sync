@@ -1,14 +1,11 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pst1/Screens/textFieldBuilder.dart';
 import 'package:pst1/Styles/app_colors.dart';
-import 'package:pst1/models/FilePages.dart';
+import 'package:pst1/models/file_pages.dart';
 
 import 'app_theme.dart';
 
@@ -150,7 +147,7 @@ class _ComposeState extends State<Compose> {
                         ),
                       )),
                     ],
-                child: Icon(Icons.expand_circle_down)),
+                child: const Icon(Icons.expand_circle_down)),
           )
         ],
       ),

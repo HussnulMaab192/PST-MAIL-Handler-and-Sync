@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:pst1/Screens/reply_mail.dart';
 
-import '../models/Mail.dart';
-import '../providers/Db.dart';
+import '../models/mail.dart';
+import '../providers/db.dart';
 import 'globalVariables.dart';
 
 // import 'package:read_json_file/weekcontent.dart';
@@ -41,7 +41,7 @@ class _ReadMailFromApiState extends State<ReadMailFromApi> {
   Future<List<Email>> ReadJsonData() async {
     //List<WeekModels> getCoursesList = [];
     var mails = <Email>[];
-    String url = "http://$ip/api/pst/GetEmails";
+    String url = "http://192.168.192.0/api/pst/GetEmails";
 
     var list2;
     var response = await http.get(Uri.parse(url));

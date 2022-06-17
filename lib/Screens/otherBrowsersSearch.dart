@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pst1/Screens/ConfigureAccount.dart';
-import 'package:pst1/Screens/app_theme.dart';
+import 'package:pst1/Screens/configure_account.dart';
+import 'package:pst1/Screens/selectServer.dart';
+
 import 'package:pst1/Styles/app_colors.dart';
 
 class OtherBrowserSearch extends StatefulWidget {
@@ -63,12 +64,12 @@ class _OtherBrowserSearchState extends State<OtherBrowserSearch> {
                           backgroundColor: AppColors.lightblueshade),
                       onPressed: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const ConfigureAccount()));
+                            builder: (context) => const SelectServer()));
                       },
                       child: const Text(
                         "Add",
                         style: TextStyle(fontSize: 25),
-                      )), // ignore: prefer_const_constructors
+                      )), 
                 ],
               ),
             ],

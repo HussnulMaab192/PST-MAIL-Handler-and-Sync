@@ -1,28 +1,29 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:pst1/Screens/InboxPage.dart';
+import 'package:pst1/Screens/inbox_page.dart';
 import 'package:pst1/Styles/app_colors.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
-import '../models/Mail.dart';
-import '../providers/Db.dart';
+import '../models/mail.dart';
+import '../providers/db.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
+  dynamic accId;
+  SearchPage({Key? key, this.accId}) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage> {
-  TextEditingController? _searchController = TextEditingController();
-  List<Map<String, dynamic>> _foundUsers = [];
+  final TextEditingController? _searchController = TextEditingController();
+
   String selection = "Select All";
   int c = 0;
   bool menu = false;
   late DBHandler db;
-  void _printData(int fid) async {
-    mails = await db.getData(fid);
+  void _printData(int fid, int accId) async {
+    mails = await db.getData(fid, accId);
     print(mails);
     print('Printing..Mails..');
     mails.forEach(((element) => print('${element.body}  ${element.fid}')));
@@ -61,7 +62,7 @@ class _SearchPageState extends State<SearchPage> {
         db = value;
         setState(() {
           while (db.getDB() == null) continue;
-          _printData(0);
+          _printData(0, widget.accId);
           print(db);
           print('Outside loop');
           setState(() {});
@@ -70,32 +71,18 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  @override
   void initState() {
     final timer = Timer(
       const Duration(milliseconds: 300),
       () {
         // Navigate to your favorite place
         handleTimeout();
+        super.initState();
       },
     );
   }
 
-  // void runFilter(String enteredKeyword) {
-  //   List<Map<String, dynamic>> results = [];
-  //   if (enteredKeyword.isEmpty) {
-  //     results = mails.cast<Map<String, dynamic>>();
-  //   } else {
-  //     results = mails
-  //         .where((mails) => mails.subject
-  //             .toLowerCase()
-  //             .contains(enteredKeyword.toLowerCase()))
-  //         .cast<Map<String, dynamic>>()
-  //         .toList();
-  //   }
-  //   setState(() {
-  //     _foundUsers = results;
-  //   });
-  // }
   List<Email> mailsOnSearch = [];
   List<Email> mails = [];
   @override
@@ -219,12 +206,14 @@ class _SearchPageState extends State<SearchPage> {
             onTap: (int i) {
               if (i == 0) {
                 Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const InboxPage()));
+                    MaterialPageRoute(builder: (context) => InboxPage()));
               } else if (i == 1) {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const SearchPage()));
+                        builder: (context) => SearchPage(
+                              accId: widget.accId,
+                            )));
               }
             }),
         body: SingleChildScrollView(
@@ -282,9 +271,7 @@ class _SearchPageState extends State<SearchPage> {
                     )
                   : ListView.builder(
                       scrollDirection: Axis.vertical,
-                      // scrollDirection: Axis.vertical,
                       shrinkWrap: true,
-                      // physics: const NeverScrollableScrollPhysics(),
                       itemCount: _searchController!.text.isNotEmpty
                           ? mailsOnSearch.length
                           : mails.length,
@@ -304,7 +291,6 @@ class _SearchPageState extends State<SearchPage> {
                                 if (c == 0) menu = false;
                               }
                             });
-                            //  menu = false;
                           },
                           child: Card(
                             color: mails[index].color
@@ -319,7 +305,7 @@ class _SearchPageState extends State<SearchPage> {
                               ),
                               title: Text(_searchController!.text.isNotEmpty
                                   ? '${mailsOnSearch[index].subject}   ${mailsOnSearch[index].fid} '
-                                  : '${mails[index].subject}   ${mails[index].fid} '),
+                                  : '${mails[index].subject}   ${mails[index].fid}    ${mails[index].accountId} '),
                               subtitle: Text(
                                 _searchController!.text.isNotEmpty
                                     ? mailsOnSearch[index].body
@@ -333,80 +319,6 @@ class _SearchPageState extends State<SearchPage> {
                           ),
                         );
                       })),
-
-              // body: Center(
-              //   child: Stack(
-              //     children: [
-              //       Container(
-              //         padding: const EdgeInsets.all(10),
-              //         child: TextFormField(
-              //           onChanged: (value) => runFilter(value),
-              //           decoration: InputDecoration(
-              //             prefixIcon: const Icon(Icons.search),
-              //             border: OutlineInputBorder(
-              //               borderRadius: BorderRadius.circular(15),
-              //             ),
-              //             hintText: 'Mails,Events,Contacts',
-              //           ),
-              //         ),
-              //       ),
-              //       Expanded(
-              //         child: _foundUsers.isNotEmpty
-              //             ? ListView.builder(
-              //                 scrollDirection: Axis.vertical,
-              //                 // scrollDirection: Axis.vertical,
-              //                 // shrinkWrap: true,
-              //                 // physics: const NeverScrollableScrollPhysics(),
-              //                 itemCount: _foundUsers.length,
-              //                 itemBuilder: ((context, index) {
-              //                   return InkWell(
-              //                     key: ValueKey(_foundUsers[index]["mid"]),
-              //                     splashColor: Colors.blue,
-              //                     onLongPress: () {
-              //                       setState(() {
-              //                         // mails[index].color = !mails[index].color;
-              //                         // mails[index].Selected =
-              //                         //     !mails[index].Selected;
-              //                         // if (mails[index].Selected == true) {
-              //                         //   menu = true;
-              //                         // } else {
-              //                         //   menu = false;
-              //                         // }
-              //                       });
-              //                       //  menu = false;
-              //                     },
-              //                     child: Card(
-              //                       color: mails[index].color
-              //                           ? Colors.white
-              //                           : Colors.blueAccent,
-              //                       elevation: 1,
-              //                       child: ListTile(
-              //                         leading: CircleAvatar(
-              //                           child: _foundUsers[index]["Selected"]
-              //                               ? const Icon(Icons.done)
-              //                               : Text(_foundUsers[index]["subject"][0]),
-              //                         ),
-              //                         title: Text(
-              //                             '${_foundUsers[index]["subject"]}   ${_foundUsers[index]["fid"]}'),
-              //                         subtitle: Text(
-              //                           _foundUsers[index]["body"],
-              //                           style: const TextStyle(
-              //                             fontSize: 12,
-              //                           ),
-              //                         ),
-              //                         trailing: Icon(Icons.star_border_outlined),
-              //                       ),
-              //                     ),
-              //                   );
-              //                 }))
-              //             : const Text(
-              //                 'No results found',
-              //                 style: TextStyle(fontSize: 24),
-              //               ),
-              //       )
-              //     ],
-              //   ),
-              // )
             ]),
           ),
         ));

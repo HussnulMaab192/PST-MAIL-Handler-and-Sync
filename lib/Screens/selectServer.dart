@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:pst1/Screens/ConfigureAccount.dart';
+import 'package:pst1/Screens/configure_account.dart';
 import 'package:pst1/Screens/advanceSetting.dart';
 
 class SelectServer extends StatefulWidget {
@@ -54,8 +54,9 @@ class _SelectServerState extends State<SelectServer> {
                               backgroundColor: Colors.transparent),
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) =>
-                                    const ConfigureAccount()));
+                                builder: (context) => const ConfigureAccount(
+                                      type: "gmail",
+                                    )));
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -88,7 +89,7 @@ class _SelectServerState extends State<SelectServer> {
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) =>
-                                    const ConfigureAccount()));
+                                    const ConfigureAccount(type: "yahoo")));
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -121,7 +122,7 @@ class _SelectServerState extends State<SelectServer> {
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) =>
-                                    const ConfigureAccount()));
+                                    const ConfigureAccount(type: "Outlook")));
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,

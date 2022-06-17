@@ -2,15 +2,15 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'package:pst1/Screens/ConfigureAccount.dart';
+import 'package:pst1/Screens/selectServer.dart';
 
 TextButton buildButton(
     IconData icon, String title, Color background, BuildContext context) {
   // onPressed()function
   return TextButton(
       onPressed: () {
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const ConfigureAccount()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => SelectServer()));
       },
       // onPressed: () async {
       //   await reg();

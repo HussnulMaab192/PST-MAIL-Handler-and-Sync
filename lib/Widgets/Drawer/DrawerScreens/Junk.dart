@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pst1/Styles/app_colors.dart';
 
-import '../../../models/Mail.dart';
-import '../../../providers/Db.dart';
+import '../../../models/mail.dart';
+import '../../../providers/db.dart';
 
 class Junk extends StatefulWidget {
-  const Junk({Key? key}) : super(key: key);
+  dynamic accId;
+  Junk({Key? key, this.accId}) : super(key: key);
 
   @override
   State<Junk> createState() => _JunkState();
@@ -31,7 +32,7 @@ class _JunkState extends State<Junk> {
         setState(() {
           while (db.getDB() == null) continue;
           print(db);
-          _printData(5);
+          _printData(5, widget.accId);
           setState(() {});
         });
       }
@@ -42,14 +43,13 @@ class _JunkState extends State<Junk> {
     final timer = Timer(
       const Duration(milliseconds: 300),
       () {
-        // Navigate to your favorite place
         handleTimeout();
       },
     );
   }
 
-  void _printData(int fid) async {
-    mails = await db.getData(fid);
+  void _printData(int fid, int accId) async {
+    mails = await db.getData(fid, accId);
     print('Printing..Mails..');
     mails.forEach(((element) => print('${element.body}  ${element.fid}')));
     setState(() {});
@@ -191,7 +191,7 @@ class _JunkState extends State<Junk> {
                           : Text(mails[index].subject[0]),
                     ),
                     title:
-                        Text('${mails[index].subject}   ${mails[index].fid} '),
+                        Text('${mails[index].subject}   ${mails[index].fid} ${mails[index].accountId} '),
                     subtitle: Text(
                       mails[index].body,
                       style: const TextStyle(

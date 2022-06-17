@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pst1/Screens/selectServer.dart';
 
+import 'FirstTimeScreens/configure_start_account.dart';
 import 'browseForPstFile.dart';
 
 class Splash extends StatefulWidget {
@@ -20,7 +20,7 @@ class _SplashState extends State<Splash> {
     await Future.delayed(const Duration(milliseconds: 3500), () {});
     // ignore: prefer_const_constructors
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const SelectServer()));
+        context, MaterialPageRoute(builder: (context) => const ConfigureMyAccount()));
   }
 
   @override

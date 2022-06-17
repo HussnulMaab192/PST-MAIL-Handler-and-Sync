@@ -1,9 +1,11 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
+// ignore: file_names
+import 'package:pst1/Screens/inbox_page.dart';
 import 'package:pst1/models/folder.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../models/Mail.dart';
+import '../HelperClasses/folder_details.dart';
+import '../models/account.dart';
+import '../models/mail.dart';
 
 class DBHandler {
   int mid = 0;
@@ -20,18 +22,16 @@ class DBHandler {
   }
 
   Database? _db;
-  static DBHandler? _instance = null;
+  static DBHandler? _instance;
   int v = 20;
   DBHandler._Init() {
     _createDB();
   }
   static Future<DBHandler> getInstnace() async {
-    if (_instance == null) _instance ??= DBHandler._Init();
+    _instance ??= DBHandler._Init();
 
     return _instance!;
   }
-
-  void mailAutoId() {}
 
   Future<void> _createDB() async {
     if (_db == null) {
@@ -43,34 +43,33 @@ class DBHandler {
           onCreate: (Database db, int version) async {
         print('Creating table');
         String query =
-            "create table account(ac_id int primary key ,acc_type varchar(40),acc_email varchar(50), acc_pass varchar(50))";
+            "create table accounts(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ,type Text,email Text, pass Text,confirm_password Text ,smtp_server Text, smtp_port integer,imap_server Text,imap_port integer )";
 
         await db.execute(query);
-        print('Account table created...');
+        print('accounts table created...');
         query =
-            "create table folder(fid int primary key ,fname varchar(50),acc_id int,parent_Folder varchar(50))";
+            "create table folders(id integer primary key ,name Text,account_id int,folder_id integer default null)";
         await db.execute(query);
-        print('Folder table created....');
+        print('folders table created....');
         query =
-            "create table contacts(contact_id int primary key ,first_name varchar(60),last_name varchar(60), picture varchar(1000),acc_id int)";
+            "create table contacts(id integer primary key ,first_name Text,last_name Text, picture Text,account_id integer)";
         await db.execute(query);
         print('contacts table created....');
 
         query =
-            " create table Email(mid int primary key ,fid int ,sender varchar(60) ,subject varchar(1000),mData varchar(1000), body varchar(2000),deleted_flag varchar(30))";
+            " create table emails(id int primary key ,folder_id int ,sender Text ,subject Text,mData Text, body Text,deleted_flag Text,account_id integer)";
         await db.execute(query);
         print(
-            'Email table created....'); //action type==mail pr ya folder pr laga?
+            'emails table created....'); //action type==mail pr ya folder pr laga?
         query =
-            "create table Action(action_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ,action_Type varchar(50) ,AValue varchar(60) ,source_field varchar(1000),dest_field varchar(1000), TDatetime datetime)";
+            "create table actions(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ,type Text ,value Text ,source Text,destination Text, TDatetime datetime)";
         await db.execute(query);
         _db = db;
 
-        print('Action table created....');
-        await insertAccountData(db);
+        print('actions table created....');
+        //await insertAccountData(db);
         await insertFolderData(db);
         await insertContactsData(db);
-
         await insertEmailData(db);
       }).then((value) {
         print('_db is intialized... ');
@@ -79,39 +78,38 @@ class DBHandler {
     }
   }
 
-  Future<void> insertData(
-      int id, String name, int accId, String parentName) async {
+  Future<void> insertData(int id, String name, int accId, int folderId) async {
     print('Executing insertion command...');
     await _db!.rawInsert(
-        "insert into folder values ('$id', '$name', '$accId','$parentName')");
-    print('Command executed');
-  }
-
-//create table Action(Action_id int primary key,Action_Type varchar(50),AValue varchar(60),field1_S varchar(50),field2_D varchar(50),TDatetime datetime2)
-  Future<void> insertAccountData(Database db) async {
-    print('Executing insertion command...');
-
-    await db.rawInsert(
-        "insert into Account values ('1', 'yahoo', 'abc@yahoo.com', '123')");
-    print('inserted...');
-    await db.rawInsert(
-        "insert into Account values ('2', 'gmail', 'abc@gmail.com', '123')");
-    await db.rawInsert(
-        "insert into Account values ('3', 'outlook', 'abc@outlook.com', '123')");
+        "insert into folders values ('$id', '$name', '$accId','$folderId')");
     print('Command executed');
   }
 
   Future<void> insertFolderData(Database db) async {
     print('Executing insertion command in Folder Table...');
 
-    await db.rawInsert("insert into folder values ('0', 'inbox', '1','null')");
-    await db.rawInsert("insert into folder values ('1', 'drafts', '1','null')");
+    await db.rawInsert("insert into folders values (0, 'inbox', '1', -1)");
     await db
-        .rawInsert("insert into folder values ('2', 'Archieve', '1','null')");
-    await db.rawInsert("insert into folder values ('3', 'sent', '1','null')");
+        .rawInsert("insert into folders values (9, 'sub inbox 2 ', '1', 0)");
     await db
-        .rawInsert("insert into folder values ('4', 'deleted', '1','null')");
-    await db.rawInsert("insert into folder values ('5', 'junk', '1','null')");
+        .rawInsert("insert into folders values (10, 'sub inbox 3 ', '1', 0)");
+    await db.rawInsert("insert into folders values (1, 'drafts', '1', -1)");
+    await db.rawInsert("insert into folders values (2, 'Archieve', '1', -1)");
+    await db.rawInsert("insert into folders values (3, 'sent', '1', -1)");
+    await db.rawInsert("insert into folders values (4, 'deleted', '1', -1)");
+    await db.rawInsert("insert into folders values (5, 'junk', '1', -1)");
+    await db.rawInsert("insert into folders values (6, 'sub inbox 1', '1', 0)");
+    await db
+        .rawInsert("insert into folders values (7, 'sub drafts 1 ', '1', 1)");
+    await db
+        .rawInsert("insert into folders values (11, 'sub draft 2 ', '1', 1)");
+    await db
+        .rawInsert("insert into folders values (8, 'sub junks 1 ', '1', 5)");
+
+    await db
+        .rawInsert("insert into folders values (12, 'sub draft 3 ', '1', 11)");
+    await db.rawInsert(
+        "insert into folders values (13, 'sub draft 3.3 ', '1', 12)");
 
     print('Command executed');
   }
@@ -144,110 +142,140 @@ class DBHandler {
 
   Future<void> insertEmailData(
     Database db,
-  
   ) async {
     print('Executing insertion command in Email Table...');
 
     await db.rawInsert(
-        "insert into Email values ('1','0','sohaib@gmail.com','Final year project','','Hello! Maab how is your Fyp going?...','false')");
+        "insert into emails values ('1','0','sohaib@gmail.com','Final year project','','Hello! Maab how is your Fyp going?...','false','1')");
     await db.rawInsert(
-        "insert into Email values ('11','0','sohaib@gmail.com','Browsing Files','','Hello! Maab how is your Fyp going?...','false')");
+        "insert into emails values ('11','0','sohaib@gmail.com','Browsing Files','','Hello! Maab how is your Fyp going?...','false','2')");
     await db.rawInsert(
-        "insert into Email values ('12','0','sohaib@gmail.com','Comosing','','Hello! Maab how is your Fyp going?...','false')");
+        "insert into emails values ('12','0','sohaib@gmail.com','Comosing','','Hello! Maab how is your Fyp going?...','false','1')");
     await db.rawInsert(
-        "insert into Email values ('13','0','sohaib@gmail.com','Text Field initializing','','Hello! Maab how is your Fyp going?...','false')");
+        "insert into emails values ('13','0','sohaib@gmail.com','Text Field initializing','','Hello! Maab how is your Fyp going?...','false','2')");
     await db.rawInsert(
-        "insert into Email values ('14','0','sohaib@gmail.com','Search Data','','Hello! Maab how is your Fyp going?...','false')");
+        "insert into emails values ('14','0','sohaib@gmail.com','Search Data','','Hello! Maab how is your Fyp going?...','false','1')");
     await db.rawInsert(
-        "insert into Email values ('7','0','sadaqah@mail.islamnet.com','New assignment:Pre mid  ','','Please submit your Q2 here','false')");
+        "insert into emails values ('7','0','sadaqah@mail.islamnet.com','New assignment:Pre mid  ','','Please submit your Q2 here','false','2')");
 
     await db.rawInsert(
-        "insert into Email values ('2','1','saqib@gmail.com','Biit Trial 5 outing','','Hi! Are you going on trial 5?...','false')");
+        "insert into emails values ('2','1','saqib@gmail.com','Biit Trial 5 outing','','Hi! Are you going on trial 5?...','false','1')");
 
     await db.rawInsert(
-        "insert into Email values ('40','1','saqib@gmail.com','Biit Trial 5 outing','','Hi! Are you going on trial 5?...','false')");
+        "insert into emails values ('40','1','saqib@gmail.com','Biit Trial 5 outing','','Hi! Are you going on trial 5?...','false','2')");
     await db.rawInsert(
-        "insert into Email values ('15','1','saqib@gmail.com','Screens','','Hi! Are you going on trial 5?...','false')");
+        "insert into emails values ('15','1','saqib@gmail.com','Screens','','Hi! Are you going on trial 5?...','false','1')");
     await db.rawInsert(
-        "insert into Email values ('16','1','saqib@gmail.com','Mockups','','Hi! Are you going on trial 5?...','false')");
+        "insert into emails values ('16','1','saqib@gmail.com','Mockups','','Hi! Are you going on trial 5?...','false','2')");
     await db.rawInsert(
-        "insert into Email values ('17','1','saqib@gmail.com','Meeting on Monday','','Hi! Are you going on trial 5?...','false')");
+        "insert into emails values ('17','1','saqib@gmail.com','Meeting on Monday','','Hi! Are you going on trial 5?...','false','1')");
     await db.rawInsert(
-        "insert into Email values ('18','1','saqib@gmail.com','Browser','','Hi! Are you going on trial 5?...','false')");
+        "insert into emails values ('18','1','saqib@gmail.com','Browser','','Hi! Are you going on trial 5?...','false','2')");
     await db.rawInsert(
-        "insert into Email values ('8','1','noreply@notifications.freelancer.com','	PROJECT DESCRIPTION','','Here are the latest projects and contests matching your skills','false')");
+        "insert into emails values ('8','1','noreply@notifications.freelancer.com','	PROJECT DESCRIPTION','','Here are the latest projects and contests matching your skills','false','1')");
 
     await db.rawInsert(
-        "insert into Email values ('3','2','umer@gmail.com','Sql in Fyp','','AOA! how to connect sql in flutter? ...','false')");
+        "insert into emails values ('3','2','umer@gmail.com','Sql in Fyp','','AOA! how to connect sql in flutter? ...','false','2')");
     await db.rawInsert(
-        "insert into Email values ('9','2','noreply@notifications.linkedin.com','LinkedIn Job Alerts','','30+ new jobs in Rawalpindi, Punjab, Pakistan match your preferences.','false')");
+        "insert into emails values ('9','2','noreply@notifications.linkedin.com','LinkedIn Job Alerts','','30+ new jobs in Rawalpindi, Punjab, Pakistan match your preferences.','false','1')");
 
     await db.rawInsert(
-        "insert into Email values ('19','2','umer@gmail.com','SqlLite in Android ','','AOA! how to connect sql in flutter? ...','false')");
+        "insert into emails values ('19','2','umer@gmail.com','SqlLite in Android ','','AOA! how to connect sql in flutter? ...','false','2')");
     await db.rawInsert(
-        "insert into Email values ('20','2','umer@gmail.com','Reading ','','AOA! how to connect sql in flutter? ...','false')");
+        "insert into emails values ('20','2','umer@gmail.com','Reading ','','AOA! how to connect sql in flutter? ...','false','1')");
     await db.rawInsert(
-        "insert into Email values ('21','2','umer@gmail.com','Ego is Enemy book','','AOA! how to connect sql in flutter? ...','false')");
+        "insert into emails values ('21','2','umer@gmail.com','Ego is Enemy book','','AOA! how to connect sql in flutter? ...','false','2')");
     await db.rawInsert(
-        "insert into Email values ('22','2','umer@gmail.com','Splash colors','','AOA! how to connect sql in flutter? ...','false')");
+        "insert into emails values ('22','2','umer@gmail.com','Splash colors','','AOA! how to connect sql in flutter? ...','false','1')");
 
     await db.rawInsert(
-        "insert into Email values ('4','3','umer@gmail.com','Faizan Abbas (Classroom)','','Database Management System Book','false')");
+        "insert into emails values ('4','3','umer@gmail.com','Faizan Abbas (Classroom)','','Database Management System Book','false','2')");
     await db.rawInsert(
-        "insert into Email values ('10','3','noreply@notifications.Rozee.com','Nutech Vocational Notifications ','','You are eligible to apply here.','false')");
+        "insert into emails values ('10','3','noreply@notifications.Rozee.com','Nutech Vocational Notifications ','','You are eligible to apply here.','false','1')");
 
     await db.rawInsert(
-        "insert into Email values ('23','3','umer@gmail.com','Faizan Abbas (Classroom)','','Database Management System Book','false')");
+        "insert into emails values ('23','3','umer@gmail.com','Faizan Abbas (Classroom)','','Database Management System Book','false','2')");
     await db.rawInsert(
-        "insert into Email values ('24','3','umer@gmail.com','Faizan Abbas (Classroom)','','Database Management System Book','false')");
+        "insert into emails values ('24','3','umer@gmail.com','Faizan Abbas (Classroom)','','Database Management System Book','false','1')");
     await db.rawInsert(
-        "insert into Email values ('25','3','umer@gmail.com','Faizan Abbas (Classroom)','','Database Management System Book','false')");
+        "insert into emails values ('25','3','umer@gmail.com','Faizan Abbas (Classroom)','','Database Management System Book','false','2')");
     await db.rawInsert(
-        "insert into Email values ('26','3','umer@gmail.com','Faizan Abbas (Classroom)','','Database Management System Book','false')");
+        "insert into emails values ('26','3','umer@gmail.com','Faizan Abbas (Classroom)','','Database Management System Book','false','1')");
 
     await db.rawInsert(
-        "insert into Email values ('5','4','jobalerts-noreply@linkedin.com','Linked in job alert','','Your job alert for De+Montfort+University','false')");
+        "insert into emails values ('5','4','jobalerts-noreply@linkedin.com','Linked in job alert','','Your job alert for De+Montfort+University','false','2')");
     await db.rawInsert(
-        "insert into Email values ('36','4','noreply@notifications.linkedin.com','Rozee.pk job Alerts','','New jobs in Lahore, Punjab, Pakistan match your preferences.','false')");
+        "insert into emails values ('36','4','noreply@notifications.linkedin.com','Rozee.pk job Alerts','','New jobs in Lahore, Punjab, Pakistan match your preferences.','false','1')");
 
     await db.rawInsert(
-        "insert into Email values ('27','4','jobalerts-noreply@linkedin.com','Canada job Alert','','Your job alert for De+Montfort+University','false')");
+        "insert into emails values ('27','4','jobalerts-noreply@linkedin.com','Canada job Alert','','Your job alert for De+Montfort+University','false','2')");
     await db.rawInsert(
-        "insert into Email values ('28','4','jobalerts-noreply@linkedin.com','Flutter dev in Germany','','Your job alert for De+Montfort+University','false')");
+        "insert into emails values ('28','4','jobalerts-noreply@linkedin.com','Flutter dev in Germany','','Your job alert for De+Montfort+University','false','1')");
     await db.rawInsert(
-        "insert into Email values ('29','4','jobalerts-noreply@linkedin.com','Fifa worldcup','','Your job alert for De+Montfort+University','false')");
+        "insert into emails values ('29','4','jobalerts-noreply@linkedin.com','Fifa worldcup','','Your job alert for De+Montfort+University','false','2')");
     await db.rawInsert(
-        "insert into Email values ('30','4','jobalerts-noreply@linkedin.com','Psl new anthem','','Your job alert for De+Montfort+University','false')");
+        "insert into emails values ('30','4','jobalerts-noreply@linkedin.com','Psl new anthem','','Your job alert for De+Montfort+University','false','1')");
     await db.rawInsert(
-        "insert into Email values ('31','4','jobalerts-noreply@linkedin.com','Imran khan new compain','','Your job alert for De+Montfort+University','false')");
+        "insert into emails values ('31','4','jobalerts-noreply@linkedin.com','Imran khan new compain','','Your job alert for De+Montfort+University','false','2')");
 
     await db.rawInsert(
-        "insert into Email values ('6','5','sadaqah@mail.islamnet.com','Islam net','','Assalamu Alaykum Hussnul, may Allah give you good health and a long life!','false')");
+        "insert into emails values ('6','5','sadaqah@mail.islamnet.com','Islam net','','Assalamu Alaykum Hussnul, may Allah give you good health and a long life!','false','1')");
     await db.rawInsert(
-        "insert into Email values ('32','5','noreply@notifications.linkedin.com','PMAS Ms Program','','Do you like to enroll in KJP?','false')");
+        "insert into emails values ('32','5','noreply@notifications.linkedin.com','PMAS Ms Program','','Do you like to enroll in KJP?','false','2')");
     await db.rawInsert(
-        "insert into Email values ('33','5','noreply@notifications.linkedin.com','Comset Ms Program','','Do you like to enroll in KJP?','false')");
+        "insert into emails values ('33','5','noreply@notifications.linkedin.com','Comset Ms Program','','Do you like to enroll in KJP?','false','1')");
     await db.rawInsert(
-        "insert into Email values ('34','5','noreply@notifications.linkedin.com','Nutech Ms Program','','Do you like to enroll in KJP?','false')");
+        "insert into emails values ('34','5','noreply@notifications.linkedin.com','Nutech Ms Program','','Do you like to enroll in KJP?','false','2')");
     await db.rawInsert(
-        "insert into Email values ('35','5','noreply@notifications.linkedin.com','Fast Ms program','','Do you like to enroll in KJP?','false')");
+        "insert into emails values ('35','5','noreply@notifications.linkedin.com','Fast Ms program','','Do you like to enroll in KJP?','false','1')");
 
     print('Command executed');
   }
 
-  Future<void> insertActionData(String action_type, String Avalue,
-      String source_field, String dest_field, DateTime TDatetime) async {
+  //         "create table accounts(id integer primary key ,type Text,email Text, pass Text)";
+
+  Future<void> insertIntoAccountData(
+      int id,
+      String type,
+      String email,
+      String password,
+      String confirmPassword,
+      String smtpServer,
+      int smtpPortNo,
+      String imapServer,
+      int imapPortNo) async {
+    print('Executing insertion command in Accounts Table...');
+
+    await _db!.rawInsert(
+        "insert into accounts values ('$id','$type', '$email', '$password', '$confirmPassword','$smtpServer','$smtpPortNo','$imapServer','$imapPortNo')");
+
+    print('data inserted in Accounts table ');
+  }
+
+  Future<List<Account>> selectAccountData() async {
+    print('\n\n\nExecuting select command...in SelectAccount Data\n\n\n');
+    var result = await _db!.rawQuery("select * from accounts");
+    //print("result in select AccountData :$result");
+    List<Account> accountList = [];
+    result.forEach((element) => accountList.add(Account.fromMap(element)));
+    print("after adding data in account list in db\n\n\n $accountList");
+    return accountList;
+  }
+
+  Future<void> insertActionData(String actionType, String aValue,
+      String sourceField, String destField, DateTime tDatetime) async {
     print('Executing insertion command in Contact Table...');
 
     await _db!.rawInsert(
-        "insert into Action values ('$action_type','$Avalue', '$source_field', '$dest_field', '$TDatetime')");
+        "insert into actions values ('$actionType','$aValue', '$sourceField', '$destField', '$tDatetime')");
 
     print('Command executed');
   }
 
-  Future<List<Email>> getData(int fid) async {
+  Future<List<Email>> getData(int fid, int accId) async {
     print('Executing select command...');
-    var result = await _db!.rawQuery("select * from Email where fid=$fid");
+    var result = await _db!.rawQuery(
+        "select * from emails where folder_id=$fid and  account_id = $accId");
     List<Email> elist = [];
     result.forEach((element) => elist.add(Email.fromMap(element)));
     return elist;
@@ -257,7 +285,16 @@ class DBHandler {
     print('Executing delete command...');
     // var result = await _db!
     //     .rawQuery("update Email set deleted_flag = true where mid=$eid");
-    var result = await _db!.rawQuery("DELETE FROM Email WHERE mid=$eid");
+    var result = await _db!.rawQuery("DELETE FROM emails WHERE id=$eid");
+    print('Delete command executed...');
+    return result;
+  }
+
+  Future<List<Map<String, dynamic>>> deleteFolder(int fid) async {
+    print('Executing delete command...');
+    // var result = await _db!
+    //     .rawQuery("update Email set deleted_flag = true where mid=$eid");
+    var result = await _db!.rawQuery("DELETE FROM folders WHERE id=$fid");
     print('Delete command executed...');
     return result;
   }
@@ -267,16 +304,16 @@ class DBHandler {
   }
 
   void UpdateEmail(int fid, int eid) async {
-    print('fid: $fid');
-    print('eid : $eid');
+    print('folder_id: $fid');
+    print('mail_id : $eid');
 
-    String query = "Update Email set fid=$fid where mid =$eid";
+    String query = "Update emails set folder_id=$fid where id =$eid";
     await _db!.rawUpdate(query);
   }
 
   Future<int> getNextid(String tablename) async {
     var result = await _db!.rawQuery("select * from $tablename ");
-    int id = 1;
+    int id = 10;
     int mid = 1;
     result.forEach((element) {
       id++;
@@ -288,19 +325,22 @@ class DBHandler {
   Future<List<DropBoxFolders>> GetFolder() async {
     List<DropBoxFolders> folders = [];
     print('fetching data.... ');
-    var result = await _db!
-        .rawQuery("select fname from Folder where parent_Folder='null'");
+    var result = await _db!.rawQuery("select * from folders");
     print('Result ::');
     print(result);
     result.forEach((element) {
       DropBoxFolders dbf = DropBoxFolders();
-      dbf.name = element["fname"].toString();
+      dbf.name = element["name"].toString();
+      dbf.pid = element["id"] as int;
+      dbf.fid = element["folder_id"] as int;
       folders.add(dbf);
-      print(dbf.name);
+
+      print("name is :::" + dbf.name.toString());
+      print("id is :::" + dbf.pid.toString());
     });
     for (int i = 0; i < folders.length; i++) {
-      String q = "Select fname from Folder where parent_Folder='" +
-          folders[i].name! +
+      String q = "Select name from folders where folder_id='" +
+          folders[i].pid.toString() +
           "'";
       print("Query =$q");
 
@@ -308,11 +348,38 @@ class DBHandler {
       print('executed...');
 
       rresult.forEach((element) {
-        folders[i].childfodlers.add(element["fname"].toString());
+        folders[i].childfodlers.add(
+              element["name"].toString(),
+            );
+        folders[i].childfodlers.add(
+              element["id"].toString(),
+            );
       });
       print('Returning   ');
       print(folders);
     }
+
+    return folders;
+  }
+
+  Future<List<FolderDetail>> GetFoldersDetail() async {
+    List<FolderDetail> folders = [];
+    print('fetching data.... ');
+    var result = await _db!.rawQuery("select * from folders");
+    print('Result ::');
+    print(result);
+    result.forEach((element) {
+      FolderDetail dbf = FolderDetail();
+      dbf.name = element["name"].toString();
+      dbf.id = element["id"] as int;
+      dbf.fid = element["folder_id"] as int;
+      folders.add(dbf);
+
+      print("name is :::" + dbf.name.toString());
+      print("id is :::" + dbf.id.toString());
+    });
+
+    print(folders);
 
     return folders;
   }

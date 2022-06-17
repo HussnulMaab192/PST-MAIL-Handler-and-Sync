@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pst1/Screens/ConfigureAccount.dart';
-import 'package:pst1/Screens/DrawerPage.dart';
-import 'package:pst1/Screens/InboxPage.dart';
+import 'package:pst1/Screens/drawer_page.dart';
+import 'package:pst1/Screens/inbox_page.dart';
+import 'package:pst1/Screens/selectServer.dart';
 
 class Temporary extends StatefulWidget {
   const Temporary({Key? key, required String title}) : super(key: key);
@@ -22,7 +22,7 @@ class _TemporaryState extends State<Temporary> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => const ConfigureAccount(),
+                    builder: (BuildContext context) => const SelectServer(),
                   ),
                 );
               },
@@ -46,7 +46,7 @@ class _TemporaryState extends State<Temporary> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => const InboxPage(),
+                    builder: (BuildContext context) => InboxPage(),
                   ),
                 );
               },

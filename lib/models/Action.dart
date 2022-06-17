@@ -26,21 +26,21 @@ class EAction {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> mp = <String, dynamic>{};
-    mp['action_id'] = action_id;
-    mp['action_type'] = action_type;
-    mp['action_value'] = action_value;
-    mp['source_field'] = source_field;
-    mp['destination_field'] = destination_field;
+    mp['id'] = action_id;
+    mp['type'] = action_type;
+    mp['value'] = action_value;
+    mp['source'] = source_field;
+    mp['destination'] = destination_field;
     mp['TDatetime'] = destination_field;
     return mp;
   }
 
   fromMap(Map<String, dynamic> map) {
-    action_id = map['action_id'];
-    action_type = map['action_type'];
-    action_value = map['action_value'];
-    source_field = map['source_field'];
-    destination_field = map['destination_field'];
+    action_id = map['id'];
+    action_type = map['type'];
+    action_value = map['value'];
+    source_field = map['source'];
+    destination_field = map['destination'];
     TDatetime = map['TDatetime'];
   }
 }

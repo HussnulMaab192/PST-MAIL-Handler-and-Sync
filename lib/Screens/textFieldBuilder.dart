@@ -22,7 +22,7 @@ Widget buildTextField(
               if (hintText == "Enter Your Mail") {
                 return "Enter Your Email First";
               }
-              if (hintText == "Password") {
+              if (hintText == "Enter Password") {
                 return "Enter Your Password First";
               }
               if (hintText == "Confirm Password") {

@@ -1,6 +1,7 @@
 class DropBoxFolders {
   String? name;
   late int pid;
+  late int fid;
   List<String> childfodlers = [];
 }
 
@@ -17,15 +18,15 @@ class Folder {
   int accid() => acc_id;
   Map<String, dynamic> toMap() {
     Map<String, dynamic> mp = <String, dynamic>{};
-    mp['fid'] = fid;
-    mp['fname'] = fname;
-    mp['acc_id'] = acc_id;
+    mp['id'] = fid;
+    mp['folder_name'] = fname;
+    mp['account_id'] = acc_id;
     return mp;
   }
 
   Folder.fromMap(Map<String, dynamic> map) {
-    fid = map['fid'];
-    fname = map['fname'];
-    acc_id = map['acc_id'];
+    fid = map['id'];
+    fname = map['folder_name'];
+    acc_id = map['account_id'];
   }
 }

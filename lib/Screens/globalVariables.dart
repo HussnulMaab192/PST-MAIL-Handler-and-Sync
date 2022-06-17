@@ -1,1 +1,7 @@
-var ip = "192.168.0.102";
+
+import '../HelperClasses/folder_details.dart';
+
+
+
+  List<FolderDetail> foldersinfo = [];
+  

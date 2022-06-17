@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pst1/Styles/app_colors.dart';
 
-import '../../../models/Mail.dart';
-import '../../../providers/Db.dart';
+import '../../../models/mail.dart';
+import '../../../providers/db.dart';
 
 class Sent extends StatefulWidget {
-  const Sent({Key? key}) : super(key: key);
+  dynamic accId;
+   Sent({Key? key, accId}) : super(key: key);
 
   @override
   State<Sent> createState() => _SentState();
@@ -30,7 +31,7 @@ class _SentState extends State<Sent> {
         setState(() {
           while (db.getDB() == null) continue;
           print(db);
-          _printData(3);
+          _printData(3, widget.accId);
           setState(() {});
         });
       }
@@ -47,10 +48,10 @@ class _SentState extends State<Sent> {
     );
   }
 
-  void _printData(int fid) async {
-    mails = await db.getData(fid);
+  void _printData(int fid, int accId) async {
+    mails = await db.getData(fid, accId);
     print('Printing..Mails..');
-    mails.forEach(((element) => print('${element.body}  ${element.fid}')));
+    mails.forEach(((element) => print('${element.body}  ${element.fid} ')));
     setState(() {});
   }
 
@@ -189,7 +190,7 @@ class _SentState extends State<Sent> {
                           : Text(mails[index].subject[0]),
                     ),
                     title:
-                        Text('${mails[index].subject}   ${mails[index].fid} '),
+                        Text('${mails[index].subject}   ${mails[index].fid}   ${mails[index].accountId}'),
                     subtitle: Text(
                       mails[index].body,
                       style: const TextStyle(

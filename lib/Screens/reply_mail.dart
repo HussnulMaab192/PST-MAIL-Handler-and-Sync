@@ -5,10 +5,10 @@ import 'package:pst1/Screens/textFieldBuilder.dart';
 
 import '../Styles/app_colors.dart';
 import '../Widgets/ButtonClass.dart';
-import '../models/Mail.dart';
+import '../models/mail.dart';
 import '../models/folder.dart';
-import '../providers/Db.dart';
-import 'InboxPage.dart';
+import '../providers/db.dart';
+import 'inbox_page.dart';
 
 class ReplyMail extends StatefulWidget {
   final mid;
@@ -38,14 +38,14 @@ class _ReplyMailState extends State<ReplyMail> {
   late DBHandler db;
   int c = 0;
   TextEditingController folderController = TextEditingController();
-  void _printData(int fid) async {
-    mails = await db.getData(fid);
-    print(mails);
-    print('Printing..Mails..');
+  // void _printData(int fid) async {
+  //   mails = await db.getData(fid);
+  //   print(mails);
+  //   print('Printing..Mails..');
 
-    mails.forEach(((element) => print('${element.body}  ${element.fid}')));
-    setState(() {});
-  }
+  //   mails.forEach(((element) => print('${element.body}  ${element.fid}')));
+  //   setState(() {});
+  // }
 
   void moveEmails(String fid) {
     List<Email> selectEmail =

@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pst1/Styles/app_colors.dart';
 
-import '../../../models/Mail.dart';
-import '../../../providers/Db.dart';
+import '../../../models/mail.dart';
+import '../../../providers/db.dart';
 
 class Delete extends StatefulWidget {
-  const Delete({Key? key}) : super(key: key);
+  dynamic accId;
+  Delete({Key? key, this.accId}) : super(key: key);
 
   @override
   State<Delete> createState() => _DeleteState();
@@ -30,7 +31,7 @@ class _DeleteState extends State<Delete> {
         setState(() {
           while (db.getDB() == null) continue;
           print(db);
-          _printData(4);
+          _printData(4, widget.accId);
           setState(() {});
         });
       }
@@ -47,8 +48,8 @@ class _DeleteState extends State<Delete> {
     );
   }
 
-  void _printData(int fid) async {
-    mails = await db.getData(fid);
+  void _printData(int fid, int accId) async {
+    mails = await db.getData(fid, accId);
     print('Printing..Mails..');
     mails.forEach(((element) => print('${element.body}  ${element.fid}')));
     setState(() {});
@@ -188,8 +189,8 @@ class _DeleteState extends State<Delete> {
                           ? const Icon(Icons.done)
                           : Text(mails[index].subject[0]),
                     ),
-                    title:
-                        Text('${mails[index].subject}   ${mails[index].fid} '),
+                    title: Text(
+                        '${mails[index].subject}   ${mails[index].fid}  ${mails[index].accountId} '),
                     subtitle: Text(
                       mails[index].body,
                       style: const TextStyle(

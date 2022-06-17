@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pst1/Styles/app_colors.dart';
 
-import '../../../models/Mail.dart';
-import '../../../providers/Db.dart';
+import '../../../models/mail.dart';
+import '../../../providers/db.dart';
 
 class Archive extends StatefulWidget {
-  const Archive({Key? key}) : super(key: key);
+  dynamic accId;
+  Archive({Key? key, this.accId}) : super(key: key);
 
   @override
   State<Archive> createState() => _ArchiveState();
@@ -29,15 +30,18 @@ class _ArchiveState extends State<Archive> {
         print('object created successfuly...');
         db = value;
         setState(() {
-          //   while (db.getDB() == null) continue;
-          print(db);
-          _printData(2);
+          while (db.getDB() == null) {
+            continue;
+          }
+        
+          _printData(2, widget.accId);
           setState(() {});
         });
       }
     });
   }
 
+  @override
   void initState() {
     final timer = Timer(
       const Duration(milliseconds: 300),
@@ -46,10 +50,11 @@ class _ArchiveState extends State<Archive> {
         handleTimeout();
       },
     );
+    super.initState();
   }
 
-  void _printData(int fid) async {
-    mails = await db.getData(fid);
+  void _printData(int fid, int accId) async {
+    mails = await db.getData(fid, accId);
     print('Printing..Mails..');
     mails.forEach(((element) => print('${element.body}  ${element.fid}')));
     setState(() {});
@@ -81,11 +86,6 @@ class _ArchiveState extends State<Archive> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         actions: [
-          // ElevatedButton(
-          //     onPressed: () {
-          //       _printData(2);
-          //     },
-          //     child: Text("Show Emails")),
           menu == true
               ? Padding(
                   padding: const EdgeInsets.only(right: 8.0),
@@ -194,8 +194,8 @@ class _ArchiveState extends State<Archive> {
                           ? const Icon(Icons.done)
                           : Text(mails[index].subject[0]),
                     ),
-                    title:
-                        Text('${mails[index].subject}   ${mails[index].fid} '),
+                    title: Text(
+                        '${mails[index].subject}   ${mails[index].fid} ${mails[index].accountId}'),
                     subtitle: Text(
                       mails[index].body,
                       style: const TextStyle(

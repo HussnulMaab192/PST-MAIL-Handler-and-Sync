@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../../Styles/app_colors.dart';
-import '../../../models/Mail.dart';
-import '../../../providers/Db.dart';
+import '../../../models/mail.dart';
+import '../../../providers/db.dart';
 
 class Drafts extends StatefulWidget {
-  const Drafts({Key? key}) : super(key: key);
+  dynamic accId;
+  Drafts({Key? key, this.accId}) : super(key: key);
 
   @override
   State<Drafts> createState() => _DraftsState();
@@ -30,7 +31,7 @@ class _DraftsState extends State<Drafts> {
         setState(() {
           while (db.getDB() == null) continue;
           print(db);
-          _printData(1);
+          _printData(1, widget.accId);
           setState(() {});
         });
       }
@@ -41,14 +42,13 @@ class _DraftsState extends State<Drafts> {
     final timer = Timer(
       const Duration(milliseconds: 300),
       () {
-        // Navigate to your favorite place
         handleTimeout();
       },
     );
   }
 
-  void _printData(int fid) async {
-    mails = await db.getData(fid);
+  void _printData(int fid, int accId) async {
+    mails = await db.getData(fid, accId);
     print('Printing..Mails..');
     mails.forEach(((element) => print('${element.body}  ${element.fid}')));
     setState(() {});
@@ -188,8 +188,8 @@ class _DraftsState extends State<Drafts> {
                           ? const Icon(Icons.done)
                           : Text(mails[index].subject[0]),
                     ),
-                    title:
-                        Text('${mails[index].subject}   ${mails[index].fid} '),
+                    title: Text(
+                        '${mails[index].subject}   ${mails[index].fid}  ${mails[index].accountId}  '),
                     subtitle: Text(
                       mails[index].body,
                       style: const TextStyle(

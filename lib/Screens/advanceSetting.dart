@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:pst1/Screens/InboxPage.dart';
-import 'package:pst1/Screens/readmailsfromApi.dart';
+import 'package:pst1/Screens/inbox_page.dart';
 import 'package:pst1/Screens/selectServer.dart';
 import 'package:pst1/Screens/textFieldBuilder.dart';
-
 import 'package:pst1/Styles/app_colors.dart';
 import 'package:pst1/Widgets/ButtonClass.dart';
-import 'package:pst1/providers/Db.dart';
 
 class AdvanceSetting extends StatefulWidget {
   const AdvanceSetting({Key? key}) : super(key: key);
@@ -17,6 +14,10 @@ class AdvanceSetting extends StatefulWidget {
 
 class _AdvanceSettingState extends State<AdvanceSetting> {
   TextEditingController incomingPortController = TextEditingController();
+  TextEditingController mailController = TextEditingController();
+  TextEditingController pswdController = TextEditingController();
+  TextEditingController cnfrmPswdCntroller = TextEditingController();
+
   TextEditingController outgoingPortController = TextEditingController();
 
   String selectedValue = "IMAP";
@@ -44,6 +45,12 @@ class _AdvanceSettingState extends State<AdvanceSetting> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.15,
                 ),
+                buildTextField(Icons.email, "Enter Email", false, true,
+                    incomingPortController),
+                buildTextField(Icons.email, "Enter Password", false, true,
+                    incomingPortController),
+                buildTextField(Icons.email, "Confirm Password", false, true,
+                    incomingPortController),
                 buildTextField(Icons.email, "Incoming Port", false, true,
                     incomingPortController),
                 Padding(
@@ -134,7 +141,7 @@ class _AdvanceSettingState extends State<AdvanceSetting> {
                             background: AppColors.blue,
                             onTap: () async {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const InboxPage()));
+                                  builder: (context) =>  InboxPage()));
                               // await DBHandler.getInstnace();
                               // Navigator.of(context).push(MaterialPageRoute(
                               //     builder: (context) => const InboxPage()));
