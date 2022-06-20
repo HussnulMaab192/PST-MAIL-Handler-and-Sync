@@ -45,10 +45,10 @@ class _ConfigureMyAccountState extends State<ConfigureMyAccount> {
                             title: "Add Account ",
                             background: AppColors.lightblueshade,
                             onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const RegisteredAccounts(
-                                 
-                                      )));
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const RegisteredAccounts()));
                             })),
                   ],
                 ),

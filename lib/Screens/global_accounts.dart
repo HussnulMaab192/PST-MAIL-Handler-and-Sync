@@ -12,14 +12,6 @@ class GlobalList extends StatefulWidget {
   static List<Email> mails = [];
   static late DBHandler db;
 
-  // static void printData(int fid) async {
-  //   GlobalList.mails = await GlobalList.db.getData(fid);
-
-  //   print('Printing..Mails..');
-
-  //   // setState(() {});
-  // }
-
   const GlobalList({Key? key}) : super(key: key);
 
   @override

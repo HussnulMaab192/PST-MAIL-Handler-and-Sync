@@ -48,7 +48,7 @@ class DBHandler {
         await db.execute(query);
         print('accounts table created...');
         query =
-            "create table folders(id integer primary key ,name Text,account_id int,folder_id integer default null)";
+            "create table folders(id integer primary key  ,name Text,account_id int,folder_id integer default null)";
         await db.execute(query);
         print('folders table created....');
         query =
@@ -234,8 +234,19 @@ class DBHandler {
 
   //         "create table accounts(id integer primary key ,type Text,email Text, pass Text)";
 
+  Future<void> insertActionData(String actionType, String aValue,
+      String sourceField, String destField, DateTime tDatetime) async {
+    getNextid("actions").then((value) async {
+      {
+        print('Executing insertion command in Action Table...');
+        await _db!.rawInsert(
+            "insert into actions values ('$actionType','$aValue', '$sourceField', '$destField', '$tDatetime')");
+        print('Command executed in Actions table ');
+      }
+    });
+  }
+
   Future<void> insertIntoAccountData(
-      int id,
       String type,
       String email,
       String password,
@@ -244,12 +255,13 @@ class DBHandler {
       int smtpPortNo,
       String imapServer,
       int imapPortNo) async {
-    print('Executing insertion command in Accounts Table...');
+    getNextid("accounts").then((value) async {
+      print('Executing insertion command in Accounts Table...');
+      await _db!.rawInsert(
+          "insert into accounts values ('$value','$type', '$email', '$password', '$confirmPassword','$smtpServer','$smtpPortNo','$imapServer','$imapPortNo')");
 
-    await _db!.rawInsert(
-        "insert into accounts values ('$id','$type', '$email', '$password', '$confirmPassword','$smtpServer','$smtpPortNo','$imapServer','$imapPortNo')");
-
-    print('data inserted in Accounts table ');
+      print('data inserted in Accounts table ');
+    });
   }
 
   Future<List<Account>> selectAccountData() async {
@@ -260,16 +272,6 @@ class DBHandler {
     result.forEach((element) => accountList.add(Account.fromMap(element)));
     print("after adding data in account list in db\n\n\n $accountList");
     return accountList;
-  }
-
-  Future<void> insertActionData(String actionType, String aValue,
-      String sourceField, String destField, DateTime tDatetime) async {
-    print('Executing insertion command in Contact Table...');
-
-    await _db!.rawInsert(
-        "insert into actions values ('$actionType','$aValue', '$sourceField', '$destField', '$tDatetime')");
-
-    print('Command executed');
   }
 
   Future<List<Email>> getData(int fid, int accId) async {
@@ -312,12 +314,12 @@ class DBHandler {
   }
 
   Future<int> getNextid(String tablename) async {
-    var result = await _db!.rawQuery("select * from $tablename ");
-    int id = 10;
-    int mid = 1;
+    var result = await _db!.rawQuery("select * from $tablename");
+    int id = 1;
+
     result.forEach((element) {
+      print('ID in $tablename =' + id.toString());
       id++;
-      mid++;
     });
     return id;
   }

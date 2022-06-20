@@ -205,8 +205,13 @@ class _SearchPageState extends State<SearchPage> {
             elevation: 10,
             onTap: (int i) {
               if (i == 0) {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => InboxPage()));
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => InboxPage(
+                              db: db,
+                              accId: widget.accId,
+                            )));
               } else if (i == 1) {
                 Navigator.pushReplacement(
                     context,

@@ -15,41 +15,28 @@ class _PopupDislpayState extends State<PopupDislpay> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Move Folder "),
+        ),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  // ListView.builder(
-                  //     itemCount: widget.fdetail.length,
-                  //     itemBuilder: ((context, index) {
-                  //       return Expanded(
-                  //         child: ExpansionTile(
-                  //           title: Text(widget.fdetail[index].name),
-                  //           children: getChildHirerachy(
-                  //               widget.fdetail[index].childrens, context),
-                  //         ),
-                  //       );
-                  //     }))
-                  for (int i = 0; i < widget.fdetail.length; i++)
-                    Expanded(
-                      child: ExpansionTile(
-                        title: Text(widget.fdetail[i].name),
-                        children: getChildHirerachy(
-                            widget.fdetail[i].childrens, context),
-                      ),
-                    ),
-                ],
-              ),
-            ],
+          child: Expanded(
+            child: Column(
+              children: [
+                for (int i = 0; i < widget.fdetail.length; i++)
+                  ExpansionTile(
+                    leading: const Icon(Icons.folder),
+                    title: Text(widget.fdetail[i].name),
+                    children:
+                        getChildHirerachy(widget.fdetail[i].childrens, context),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-////
-  ///
   List<Widget> getChildHirerachy(
       List<FolderDetail> children, BuildContext context) {
     List<Widget> exp = [];
@@ -60,6 +47,7 @@ class _PopupDislpayState extends State<PopupDislpay> {
       print('Printintig....' + children[i].name);
       exp.add(
         ExpansionTile(
+          leading: const Icon(Icons.folder_copy_outlined),
           title: Text(children[i].name),
           children: getChildHirerachy(children[i].childrens, context),
           trailing: IconButton(
@@ -74,13 +62,21 @@ class _PopupDislpayState extends State<PopupDislpay> {
                         actions: [
                           TextButton(
                               onPressed: () {
-                                Navigator.of(context).pop();
+                                //  Navigator.of(context).pop();
+                                print("Inside pop create");
                               },
                               child: const Text("create")),
                           TextButton(
-                              onPressed: () {}, child: const Text("Move")),
+                              onPressed: () {
+                                print("Inside pop Move");
+                              },
+                              child: const Text("Move")),
                           TextButton(
-                              onPressed: () {}, child: const Text("Delete")),
+                              onPressed: () {
+                                print("Inside pop delete");
+                              
+                              },
+                              child: const Text("Delete")),
                         ],
                       );
                     });

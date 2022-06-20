@@ -1,16 +1,17 @@
+// ignore_for_file: unnecessary_string_interpolations
+
 import 'dart:async';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:pst1/Screens/compose.dart';
 import 'package:pst1/Screens/globalVariables.dart';
 import 'package:pst1/Screens/reply_mail.dart';
+import 'package:pst1/Screens/textFieldBuilder.dart';
 import 'package:pst1/Styles/app_colors.dart';
 import 'package:pst1/Widgets/ButtonClass.dart';
 import 'package:pst1/Widgets/widgets_drawer_coding.dart';
 import 'package:pst1/models/folder.dart';
 import '../HelperClasses/folder_details.dart';
-
-import '../global_method.dart';
 import '../models/mail.dart';
 import '../providers/db.dart';
 import 'FirstTimeScreens/registered_account.dart';
@@ -21,7 +22,9 @@ class InboxPage extends StatefulWidget {
   DBHandler? db;
   static List<FolderDetail> finfo = [];
   dynamic accId;
-  InboxPage({Key? key, this.db, this.accId}) : super(key: key);
+  dynamic accmail;
+  InboxPage({Key? key, this.db, required this.accId, this.accmail})
+      : super(key: key);
 
   @override
   State<InboxPage> createState() => _InboxPageState();
@@ -61,22 +64,22 @@ class _InboxPageState extends State<InboxPage> {
           }
           print('Ini...');
           _printData(0, widget.accId ?? 1);
-          fetchAccountData();
-          print(db);
-          print('Outside loop');
-          db.GetFolder().then((value) {
-            mainFolders = value;
-            dbf = mainFolders.where((e) => e.fid == -1).toList();
-            print('Length ' + dbf.length.toString());
-            setState(() {});
-          });
-          db.GetFoldersDetail().then((value) {
-            foldersinfo = value;
-            FolderDetail fdet = FolderDetail();
-            List<FolderDetail> herichaywisefolders =
-                fdet.getFolderHirerachy(foldersinfo);
-            print(herichaywisefolders);
-          });
+          // fetchAccountData();
+          // print(db);
+          // print('Outside loop');
+          // db.GetFolder().then((value) {
+          //   mainFolders = value;
+          //   dbf = mainFolders.where((e) => e.fid == -1).toList();
+          //   print('Length ' + dbf.length.toString());
+          //   setState(() {});
+          // });
+          // db.GetFoldersDetail().then((value) {
+          //   foldersinfo = value;
+          //   FolderDetail fdet = FolderDetail();
+          //   List<FolderDetail> herichaywisefolders =
+          //       fdet.getFolderHirerachy(foldersinfo);
+          //   print(herichaywisefolders);
+          // });
           //  initData();
         });
       }
@@ -88,6 +91,7 @@ class _InboxPageState extends State<InboxPage> {
   List<DropBoxFolders> mainFolders = [];
   @override
   void initState() {
+    print('Inside init state...');
     if (widget.db != null) {
       widget.db!.GetFoldersDetail().then((value) {
         foldersinfo = value;
@@ -100,24 +104,25 @@ class _InboxPageState extends State<InboxPage> {
           InboxPage.finfo.addAll(foldersinfo);
         });
       });
-      _printData(0, widget.accId ?? 1);
+      // _printData(0, widget.accId ?? 1);
       fetchAccountData();
       initData();
       setState(() {});
       super.initState();
     }
 
-    // t = Timer.periodic(const Duration(milliseconds: 300), (timer) {
-    //  // handleTimeout();
-    // });
+    t = Timer.periodic(const Duration(milliseconds: 300), (timer) {
+      handleTimeout();
+    });
   }
 
   void _printData(int fid, int accId) async {
     mails = await widget.db!.getData(fid, accId);
     print(mails);
     print('Printing..Mails..');
-    mails.forEach(((element) =>
-        print('${element.body}  ${element.fid} ${element.accountId}')));
+    mails.forEach(((element) {
+      print('${element.body}  ${element.fid} ${element.accountId}');
+    }));
     setState(() {});
   }
 
@@ -138,14 +143,15 @@ class _InboxPageState extends State<InboxPage> {
     return folderId.toString();
   }
 
-  void moveEmails(String fid) {
+  void moveEmails(String fid) async {
     List<Email> selectEmail =
         mails.where((element) => element.Selected).toList();
     mails.removeWhere((element) => element.Selected);
     for (var element in selectEmail) {
       db.UpdateEmail(int.parse(fid), element.mid);
-      db.insertActionData(
+      await db.insertActionData(
           "mail", "move", "${element.fid.toString()}", "$fid", DateTime.now());
+      print("Done moveEmail in inbox ");
     }
 
     setState(() {});
@@ -180,9 +186,67 @@ class _InboxPageState extends State<InboxPage> {
             ),
             IconButton(
               onPressed: () {
-                {
-                  // createNewFolder(context, parentFolder, folderId);
-                }
+                showDialog(
+                    context: context,
+                    builder: (cont) {
+                      return AlertDialog(
+                        title: const Text("Create Folder "),
+                        actions: [
+                          buildTextField(Icons.create_new_folder, "enter name",
+                              false, false, folderController),
+                          TextButton(
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                DBHandler db = await DBHandler.getInstnace();
+                                await db.insertData(
+                                    //    Sdab
+                                    // yahan agr id auto ki jaay tu error resolve ho jay ga but
+                                    // getNextId is not working for any other folder except accounts
+                                    107,
+                                    folderController.text,
+                                    1,
+                                    -1);
+                                Navigator.of(context).pop();
+                                showDialog(
+                                    context: context,
+                                    builder: (con) {
+                                      return AlertDialog(
+                                        title: Text(
+                                            "${folderController.text} Folder created!"),
+                                      );
+                                    });
+                                //  showDialog(
+                                //   context: context,
+                                //   builder: (con) {
+                                //     return AlertDialog(
+                                //       title: const Text(
+                                //           'Data is inserted...'),
+                                //       actions: [
+                                //         TextButton(
+                                //             onPressed: () {
+                                //               FolderDetail fd =
+                                //                   FolderDetail();
+                                //               fd.name =
+                                //                   folderController
+                                //                       .text;
+                                //               children[i]
+                                //                   .childrens
+                                //                   .add(fd);
+
+                                //               Navigator.of(
+                                //                       context)
+                                //                   .pop();
+                                //             },
+                                //             child: const Text(
+                                //                 'OK'))
+                                //       ],
+                                //     );
+                                //   });
+                              },
+                              child: const Text("Create"))
+                        ],
+                      );
+                    });
               },
               icon: const Icon(Icons.create_new_folder),
             ),
@@ -253,7 +317,7 @@ class _InboxPageState extends State<InboxPage> {
                                             mails[i].Selected = true;
                                             mails[i].color = false;
                                           }
-                                          selection = "Deselect All";
+                                          selection = "Unselect All";
                                         })
                                       : setState(() {
                                           for (int i = 0;
@@ -291,7 +355,7 @@ class _InboxPageState extends State<InboxPage> {
             //     await db.GetFolder();
           }
         },
-        drawer: myDrawer(context, widget.accId ?? 1),
+        drawer: myDrawer(context, widget.accId ?? 1, widget.accmail),
         floatingActionButton: FloatingActionButton.extended(
             heroTag: "btn2",
             label: Row(
@@ -315,8 +379,13 @@ class _InboxPageState extends State<InboxPage> {
             elevation: 10,
             onTap: (int i) {
               if (i == 0) {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => InboxPage()));
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => InboxPage(
+                              db: widget.db,
+                              accId: widget.accId,
+                            )));
               } else if (i == 1) {
                 Navigator.pushReplacement(
                     context,
@@ -433,8 +502,13 @@ class _InboxPageState extends State<InboxPage> {
                   onTap: () {
                     db.insertData(
                         folderid, folderController.text.toString(), 2, parent);
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => InboxPage()));
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => InboxPage(
+                                  db: widget.db,
+                                  accId: widget.accId,
+                                )));
                   }),
             )
           ]),

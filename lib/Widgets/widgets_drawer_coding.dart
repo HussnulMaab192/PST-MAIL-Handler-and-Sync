@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pst1/Widgets/Drawer/DrawerScreens/Drafts.dart';
+import 'package:pst1/providers/db.dart';
 
 import '../HelperClasses/my_widget_drawer.dart';
 import '../Screens/globalVariables.dart';
@@ -11,18 +12,17 @@ import 'Drawer/DrawerScreens/Settings.dart';
 import 'Drawer/DrawerScreens/deleted.dart';
 import 'Drawer/DrawerScreens/sent.dart';
 
-Widget myDrawer( BuildContext context, int accId ) {
-
+Widget myDrawer(BuildContext context, int accId, final accmMail) {
   return Drawer(
     child: ListView(
       children: [
-        const UserAccountsDrawerHeader(
-            currentAccountPicture: CircleAvatar(
+        UserAccountsDrawerHeader(
+            currentAccountPicture: const CircleAvatar(
               backgroundColor: Colors.amberAccent,
               child: Text('PST'),
             ),
-            accountName: Text("PST MAIL HANDLER"),
-            accountEmail: Text("pst@gmail.com")),
+            accountName: const Text("PST MAIL HANDLER"),
+            accountEmail: Text("$accmMail")),
         for (int i = 0; i < foldersinfo.length; i++)
           Row(
             children: [
@@ -50,10 +50,12 @@ Widget myDrawer( BuildContext context, int accId ) {
             leading: IconButton(
               // Icons.move_to_inbox_sharp,
               color: AppColors.lightblueshade,
-              onPressed: () {
+              onPressed: () async {
+                DBHandler db = await DBHandler.getInstnace();
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => InboxPage(
-                          db: null,
+                          db: db,
+                          accId: accId,
                         )));
               },
               icon: const Icon(Icons.move_to_inbox),
@@ -69,7 +71,7 @@ Widget myDrawer( BuildContext context, int accId ) {
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => Drafts(
-                          accId: accId ,
+                          accId: accId,
                         )));
               },
               icon: const Icon(

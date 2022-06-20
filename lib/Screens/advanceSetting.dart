@@ -4,6 +4,8 @@ import 'package:pst1/Screens/selectServer.dart';
 import 'package:pst1/Screens/textFieldBuilder.dart';
 import 'package:pst1/Styles/app_colors.dart';
 import 'package:pst1/Widgets/ButtonClass.dart';
+import '../providers/db.dart';
+
 
 class AdvanceSetting extends StatefulWidget {
   const AdvanceSetting({Key? key}) : super(key: key);
@@ -140,8 +142,9 @@ class _AdvanceSettingState extends State<AdvanceSetting> {
                             title: "OK ",
                             background: AppColors.blue,
                             onTap: () async {
+                               DBHandler db = await DBHandler.getInstnace();
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) =>  InboxPage()));
+                                  builder: (context) =>  InboxPage(db:db,accId:1,)));
                               // await DBHandler.getInstnace();
                               // Navigator.of(context).push(MaterialPageRoute(
                               //     builder: (context) => const InboxPage()));
