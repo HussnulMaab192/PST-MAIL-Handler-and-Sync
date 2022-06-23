@@ -79,10 +79,14 @@ class DBHandler {
   }
 
   Future<void> insertData(int id, String name, int accId, int folderId) async {
-    print('Executing insertion command...');
-    await _db!.rawInsert(
-        "insert into folders values ('$id', '$name', '$accId','$folderId')");
-    print('Command executed');
+    getNextid("folders").then((value) async {
+      {
+        print('Executing insertion command in Action Table...');
+        await _db!.rawInsert(
+            "insert into folders values ('$value', '$name', '$accId','$folderId')");
+        print('Command executed');
+      }
+    });
   }
 
   Future<void> insertFolderData(Database db) async {
@@ -140,6 +144,26 @@ class DBHandler {
     print('Command executed');
   }
 
+
+
+  Future<void> insertIntoOriginalMails(
+  
+   dynamic fid,
+   dynamic accountId,
+   String sender,
+   String subject,
+   String mData,
+   String body
+      ) async {
+    getNextid("emails").then((value) async {
+      {
+        print('Executing insertion command in original Emails Table...');
+        await _db!.rawInsert(
+            "insert into emails values ('$value','$fid','$accountId', '$sender', '$subject', '$body')");
+        print('Command executed in original Emails table   ');
+      }
+    });
+  }
   Future<void> insertEmailData(
     Database db,
   ) async {
@@ -240,7 +264,7 @@ class DBHandler {
       {
         print('Executing insertion command in Action Table...');
         await _db!.rawInsert(
-            "insert into actions values ('$actionType','$aValue', '$sourceField', '$destField', '$tDatetime')");
+            "insert into actions values ('$value','$actionType','$aValue', '$sourceField', '$destField', '$tDatetime')");
         print('Command executed in Actions table ');
       }
     });
@@ -313,6 +337,16 @@ class DBHandler {
     await _db!.rawUpdate(query);
   }
 
+
+
+  void UpdateFolder(int id, int pid) async {
+    print('folder_id: $id');
+    print('parent_id : $pid');
+
+    String query = "Update folders set folder_id=$pid where id =$id";
+    await _db!.rawUpdate(query);
+  }
+
   Future<int> getNextid(String tablename) async {
     var result = await _db!.rawQuery("select * from $tablename");
     int id = 1;
@@ -324,45 +358,45 @@ class DBHandler {
     return id;
   }
 
-  Future<List<DropBoxFolders>> GetFolder() async {
-    List<DropBoxFolders> folders = [];
-    print('fetching data.... ');
-    var result = await _db!.rawQuery("select * from folders");
-    print('Result ::');
-    print(result);
-    result.forEach((element) {
-      DropBoxFolders dbf = DropBoxFolders();
-      dbf.name = element["name"].toString();
-      dbf.pid = element["id"] as int;
-      dbf.fid = element["folder_id"] as int;
-      folders.add(dbf);
+  // Future<List<DropBoxFolders>> GetFolder() async {
+  //   List<DropBoxFolders> folders = [];
+  //   print('fetching data.... ');
+  //   var result = await _db!.rawQuery("select * from folders");
+  //   print('Result ::');
+  //   print(result);
+  //   result.forEach((element) {
+  //     DropBoxFolders dbf = DropBoxFolders();
+  //     dbf.name = element["name"].toString();
+  //     dbf.pid = element["id"] as int;
+  //     dbf.fid = element["folder_id"] as int;
+  //     folders.add(dbf);
 
-      print("name is :::" + dbf.name.toString());
-      print("id is :::" + dbf.pid.toString());
-    });
-    for (int i = 0; i < folders.length; i++) {
-      String q = "Select name from folders where folder_id='" +
-          folders[i].pid.toString() +
-          "'";
-      print("Query =$q");
+  //     print("name is :::" + dbf.name.toString());
+  //     print("id is :::" + dbf.pid.toString());
+  //   });
+  //   for (int i = 0; i < folders.length; i++) {
+  //     String q = "Select name from folders where folder_id='" +
+  //         folders[i].pid.toString() +
+  //         "'";
+  //     print("Query =$q");
 
-      var rresult = await _db!.rawQuery(q);
-      print('executed...');
+  //     var rresult = await _db!.rawQuery(q);
+  //     print('executed...');
 
-      rresult.forEach((element) {
-        folders[i].childfodlers.add(
-              element["name"].toString(),
-            );
-        folders[i].childfodlers.add(
-              element["id"].toString(),
-            );
-      });
-      print('Returning   ');
-      print(folders);
-    }
+  //     rresult.forEach((element) {
+  //       folders[i].childfodlers.add(
+  //             element["name"].toString(),
+  //           );
+  //       folders[i].childfodlers.add(
+  //             element["id"].toString(),
+  //           );
+  //     });
+  //     print('Returning   ');
+  //     print(folders);
+  //   }
 
-    return folders;
-  }
+  //   return folders;
+  // }
 
   Future<List<FolderDetail>> GetFoldersDetail() async {
     List<FolderDetail> folders = [];
@@ -385,4 +419,6 @@ class DBHandler {
 
     return folders;
   }
+
+
 }

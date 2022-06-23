@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pst1/Screens/FirstTimeScreens/client.dart';
 import 'package:pst1/Screens/inbox_page.dart';
 import 'package:pst1/Screens/selectServer.dart';
 import 'package:pst1/providers/db.dart';
@@ -72,17 +73,14 @@ class _RegisteredAccountsState extends State<RegisteredAccounts> {
                               child: InkWell(
                                 onTap: () async {
                                   DBHandler db = await DBHandler.getInstnace();
-                                  Navigator.of(context)
-                                      .pushReplacement(MaterialPageRoute(
-                                          builder: (context) => InboxPage(
-                                                db: db,
-                                                accId: GlobalList
-                                                    .accountsList![index]
-                                                    .acc_id,
-                                                accmail: GlobalList
-                                                    .accountsList![index]
-                                                    .acc_mail,
-                                              )));
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => InboxPage(
+                                            db: db,
+                                            accId: GlobalList
+                                                .accountsList![index].acc_id,
+                                            accmail: GlobalList
+                                                .accountsList![index].acc_mail,
+                                          )));
                                 },
                                 child: ListTile(
                                   leading: CircleAvatar(
@@ -90,10 +88,17 @@ class _RegisteredAccountsState extends State<RegisteredAccounts> {
                                         .accountsList![index].acc_mail[0]),
                                   ),
                                   title: Text(
-                                      GlobalList.accountsList![index].acc_mail),
-                                  trailing: Text(GlobalList
-                                      .accountsList![index].acc_id
-                                      .toString()),
+                                      GlobalList.accountsList![index].acc_mail +
+                                          GlobalList.accountsList![index].acc_id
+                                              .toString()),
+                                  trailing: IconButton(
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SocketClient()));
+                                      },
+                                      icon: const Icon(Icons.sync_alt)),
                                 ),
                               ),
                             );

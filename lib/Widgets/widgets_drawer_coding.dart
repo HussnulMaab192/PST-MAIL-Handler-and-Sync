@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:pst1/Widgets/Drawer/DrawerScreens/Drafts.dart';
 import 'package:pst1/providers/db.dart';
 
+import '../HelperClasses/folder_details.dart';
 import '../HelperClasses/my_widget_drawer.dart';
 import '../Screens/globalVariables.dart';
 import '../Screens/inbox_page.dart';
+import '../Screens/popup.dart';
 import '../Styles/app_colors.dart';
 import 'Drawer/DrawerScreens/Archive.dart';
 import 'Drawer/DrawerScreens/Junk.dart';
@@ -24,17 +26,141 @@ Widget myDrawer(BuildContext context, int accId, final accmMail) {
             accountName: const Text("PST MAIL HANDLER"),
             accountEmail: Text("$accmMail")),
         for (int i = 0; i < foldersinfo.length; i++)
-          Row(
-            children: [
-              Expanded(
-                child: ExpansionTile(
-                  title: Text(foldersinfo[i].name),
-                  children:
-                      getChildHirerachy(foldersinfo[i].childrens, context),
+          foldersinfo[i].name == "inbox" ||
+                  foldersinfo[i].name == "drafts" ||
+                  foldersinfo[i].name == "Archieve" ||
+                  foldersinfo[i].name == "sent" ||
+                  foldersinfo[i].name == "deleted" ||
+                  foldersinfo[i].name == "junk"
+              ? Container()
+              : Row(
+                  children: [
+                    Expanded(
+                      child: ExpansionTile(
+                          leading: const Icon(Icons.folder_special),
+                          title: Text(foldersinfo[i].name),
+                          children: getChildHirerachy(
+                              foldersinfo[i].childrens, context),
+                          trailing: IconButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (cnt) {
+                                      return AlertDialog(
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (cont) {
+                                                      TextEditingController
+                                                          controller =
+                                                          TextEditingController();
+                                                      return AlertDialog(
+                                                        actions: [
+                                                          const Center(
+                                                              child: Text(
+                                                                  "Enter name ")),
+                                                          TextField(
+                                                            controller:
+                                                                controller,
+                                                          ),
+                                                          TextButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                DBHandler db =
+                                                                    await DBHandler
+                                                                        .getInstnace();
+                                                                await db.insertData(
+                                                                    //    Sdab
+                                                                    // yahan agr id auto ki jaay tu error resolve ho jay ga but
+                                                                    // getNextId is not working for any other folder except accounts
+                                                                    105,
+                                                                    controller.text,
+                                                                    1,
+                                                                    foldersinfo[i].id);
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+
+                                                                showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (con) {
+                                                                      return AlertDialog(
+                                                                        title: const Text(
+                                                                            'Data is inserted..'),
+                                                                        actions: [
+                                                                          TextButton(
+                                                                              onPressed: () {
+                                                                                FolderDetail fd = FolderDetail();
+                                                                                fd.name = controller.text;
+                                                                                foldersinfo[i].childrens.add(fd);
+
+                                                                                Navigator.of(context).pop();
+                                                                              },
+                                                                              child: const Text('OK'))
+                                                                        ],
+                                                                      );
+                                                                    });
+                                                              },
+                                                              child: const Text(
+                                                                  "Create"))
+                                                        ],
+                                                      );
+                                                    });
+                                              },
+                                              child: const Text("create")),
+                                          TextButton(
+                                              onPressed: () {
+                                                //Navigator.of(context).pop();
+                                                Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            PopupDislpay(
+                                                                fdetail: InboxPage
+                                                                    .finfo)));
+                                             
+                                              },
+                                              child: const Text("Move")),
+                                          TextButton(
+                                              onPressed: () async {
+                                                Navigator.of(context).pop();
+                                                DBHandler db = await DBHandler
+                                                    .getInstnace();
+                                                await db.deleteFolder(
+                                                    foldersinfo[i].id);
+                                                Navigator.of(context).pop();
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (cont) {
+                                                      return AlertDialog(
+                                                        title: const Text(
+                                                            'Folder Deleted..'),
+                                                        actions: [
+                                                          TextButton(
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop();
+                                                              },
+                                                              child: const Text(
+                                                                  "ok"))
+                                                        ],
+                                                      );
+                                                    });
+                                              },
+                                              child: const Text("Delete")),
+                                        ],
+                                      );
+                                    });
+                              },
+                              icon: const Icon(Icons.more_vert))),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
         GestureDetector(
           // child: treee,
           child: const ListTile(

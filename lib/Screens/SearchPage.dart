@@ -9,7 +9,8 @@ import '../providers/db.dart';
 
 class SearchPage extends StatefulWidget {
   dynamic accId;
-  SearchPage({Key? key, this.accId}) : super(key: key);
+  dynamic accMail;
+  SearchPage({Key? key, this.accId, this.accMail}) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -211,6 +212,7 @@ class _SearchPageState extends State<SearchPage> {
                         builder: (context) => InboxPage(
                               db: db,
                               accId: widget.accId,
+                              accmail: widget.accMail,
                             )));
               } else if (i == 1) {
                 Navigator.pushReplacement(
@@ -218,6 +220,7 @@ class _SearchPageState extends State<SearchPage> {
                     MaterialPageRoute(
                         builder: (context) => SearchPage(
                               accId: widget.accId,
+                              accMail: widget.accMail,
                             )));
               }
             }),

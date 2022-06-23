@@ -153,61 +153,61 @@ class _ComposeState extends State<Compose> {
         ],
       ),
       body: SingleChildScrollView(
-        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-          const SizedBox(
-            height: 5,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: buildTextField(Icons.assignment_ind_outlined, "From",
-                    false, true, fromController),
-              ),
-              IconButton(
-                  onPressed: () {
-                    showToCcBcc = true;
-                    setState(() {});
-                  },
-                  icon: const Icon(Icons.abc))
-            ],
-          ),
-          buildTextField(
-              Icons.assignment_ind_outlined, "To", false, true, toController),
-          showToCcBcc == true
-              ? Column(
-                  children: [
-                    buildTextField(Icons.assignment_ind_outlined, "Cc", false,
-                        true, ccController),
-                    buildTextField(Icons.assignment_ind_outlined, "Bcc", false,
-                        true, bccController),
-                  ],
-                )
-              : const Text(" "),
-          
-          buildTextField(
-              Icons.subject_outlined, "Subject", false, true, subController),
-          const SizedBox(
-            height: 5,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 25.0),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: TextField(
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                controller: _textEditingController,
-                decoration: InputDecoration(
-                  hintText: "Compose Email",
-                  hintStyle: AppTheme.searchTextStyle,
-                  border: InputBorder.none,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 5,
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: buildTextField(Icons.assignment_ind_outlined, "From",
+                      false, true, fromController),
+                ),
+                IconButton(
+                    onPressed: () {
+                      showToCcBcc = true;
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.abc))
+              ],
+            ),
+            buildTextField(
+                Icons.assignment_ind_outlined, "To", false, true, toController),
+            showToCcBcc == true
+                ? Column(
+                    children: [
+                      buildTextField(Icons.assignment_ind_outlined, "Cc", false,
+                          true, ccController),
+                      buildTextField(Icons.assignment_ind_outlined, "Bcc",
+                          false, true, bccController),
+                    ],
+                  )
+                : const Text(" "),
+            buildTextField(
+                Icons.subject_outlined, "Subject", false, true, subController),
+            const SizedBox(
+              height: 5,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 25.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: TextField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  controller: _textEditingController,
+                  decoration: InputDecoration(
+                    hintText: "Compose Email",
+                    hintStyle: AppTheme.searchTextStyle,
+                    border: InputBorder.none,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
         ),
-        
       ),
     );
   }

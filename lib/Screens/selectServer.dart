@@ -53,7 +53,6 @@ class _SelectServerState extends State<SelectServer> {
                               primary: Colors.white,
                               backgroundColor: Colors.transparent),
                           onPressed: () {
-                            
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const ConfigureAccount(
                                       type: "gmail",

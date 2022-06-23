@@ -11,6 +11,7 @@ import 'package:pst1/Styles/app_colors.dart';
 import 'package:pst1/Widgets/ButtonClass.dart';
 import 'package:pst1/Widgets/widgets_drawer_coding.dart';
 import 'package:pst1/models/folder.dart';
+import 'package:pst1/models/folder_details.dart';
 import '../HelperClasses/folder_details.dart';
 import '../models/mail.dart';
 import '../providers/db.dart';
@@ -21,6 +22,7 @@ import 'global_accounts.dart';
 class InboxPage extends StatefulWidget {
   DBHandler? db;
   static List<FolderDetail> finfo = [];
+  List<FolderDetails> currentFinfo = [];
   dynamic accId;
   dynamic accmail;
   InboxPage({Key? key, this.db, required this.accId, this.accmail})
@@ -49,7 +51,7 @@ class _InboxPageState extends State<InboxPage> {
 
   void handleTimeout() {
     // callback function
-    print('Inside handle time out.. ');
+    print('Inside handle time out.... ');
     DBHandler.getInstnace().then((value) {
       // ignore: unnecessary_null_comparison
       if (value == null) {
@@ -100,7 +102,9 @@ class _InboxPageState extends State<InboxPage> {
             fdet.getFolderHirerachy(foldersinfo);
         foldersinfo.clear();
         foldersinfo = herichaywisefolders;
+
         setState(() {
+          InboxPage.finfo.clear();
           InboxPage.finfo.addAll(foldersinfo);
         });
       });
@@ -148,7 +152,7 @@ class _InboxPageState extends State<InboxPage> {
         mails.where((element) => element.Selected).toList();
     mails.removeWhere((element) => element.Selected);
     for (var element in selectEmail) {
-      db.UpdateEmail(int.parse(fid), element.mid);
+      db.UpdateEmail(int.parse(fid), element.mid); // yh move ho raha hai
       await db.insertActionData(
           "mail", "move", "${element.fid.toString()}", "$fid", DateTime.now());
       print("Done moveEmail in inbox ");
@@ -199,13 +203,7 @@ class _InboxPageState extends State<InboxPage> {
                                 Navigator.pop(context);
                                 DBHandler db = await DBHandler.getInstnace();
                                 await db.insertData(
-                                    //    Sdab
-                                    // yahan agr id auto ki jaay tu error resolve ho jay ga but
-                                    // getNextId is not working for any other folder except accounts
-                                    107,
-                                    folderController.text,
-                                    1,
-                                    -1);
+                                    107, folderController.text, 1, -1);
                                 Navigator.of(context).pop();
                                 showDialog(
                                     context: context,
@@ -392,6 +390,7 @@ class _InboxPageState extends State<InboxPage> {
                     MaterialPageRoute(
                         builder: (context) => SearchPage(
                               accId: widget.accId,
+                              accMail: widget.accmail,
                             )));
               }
             }),

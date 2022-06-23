@@ -41,7 +41,9 @@ dependencies:
   flutter_treeview: ^1.0.7+1
   http: any
   google_fonts: 
-
+  flutter_email_sender: ^5.1.0
+  tcp_socket_connection: ^0.3.0
+  shared_preferences: ^2.0.15
 dev_dependencies:
   flutter_test:
     sdk: flutter

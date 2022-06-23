@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_string_interpolations
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -68,7 +70,7 @@ class _ReplyMailState extends State<ReplyMail> {
     for (var element in selectEmail) {
       db.deleteMail(element.mid);
       db.insertActionData(
-          "mail", "delete", "${element.fid.toString()}", "", DateTime.now());
+          "mail", "delete", element.fid.toString(), "", DateTime.now());
     }
     setState(() {});
   }

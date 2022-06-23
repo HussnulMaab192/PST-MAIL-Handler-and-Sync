@@ -43,8 +43,7 @@ class _FilePagesState extends State<FilePages> {
   Widget buildFile(PlatformFile file) {
     final kb = file.size / 1024;
     final mb = kb / 1024;
-    final fileSize =
-        mb >= 1 ? mb.toStringAsFixed(2) : kb.toStringAsFixed(2);
+    final fileSize = mb >= 1 ? mb.toStringAsFixed(2) : kb.toStringAsFixed(2);
     // ignore: unused_local_variable
     final extention = file.extension ?? 'none';
     // final color = getColor(extension);
