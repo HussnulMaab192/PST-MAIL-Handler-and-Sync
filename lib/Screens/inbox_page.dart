@@ -10,6 +10,7 @@ import 'package:pst1/Screens/textFieldBuilder.dart';
 import 'package:pst1/Styles/app_colors.dart';
 import 'package:pst1/Widgets/ButtonClass.dart';
 import 'package:pst1/Widgets/widgets_drawer_coding.dart';
+import 'package:pst1/models/action.dart';
 import 'package:pst1/models/folder.dart';
 import 'package:pst1/models/folder_details.dart';
 import '../HelperClasses/folder_details.dart';
@@ -152,23 +153,41 @@ class _InboxPageState extends State<InboxPage> {
         mails.where((element) => element.Selected).toList();
     mails.removeWhere((element) => element.Selected);
     for (var element in selectEmail) {
-      db.UpdateEmail(int.parse(fid), element.mid); // yh move ho raha hai
-      await db.insertActionData(
-          "mail", "move", "${element.fid.toString()}", "$fid", DateTime.now());
+      db.UpdateEmail(int.parse(fid), element.mid);
+      print("before action constructor  in inbox");
+      EAction a = EAction(
+          action_type: "mail",
+          action_value: "move",
+          source_field: "${element.fid.toString()}",
+          destination_field: "$fid",
+          TDatetime: DateTime.now(),
+          object_id: element.mid);
+      print("before action table in inbox for move table ");
+      await db.insertActionData(a);
+      print("after action table in inbox ");
+
       print("Done moveEmail in inbox ");
     }
 
     setState(() {});
   }
 
-  void delete() {
+  void delete() async {
     List<Email> selectEmail =
         mails.where((element) => element.Selected).toList();
     mails.removeWhere((element) => element.Selected);
     for (var element in selectEmail) {
       db.deleteMail(element.mid);
-      db.insertActionData(
-          "mail", "delete", element.fid.toString(), "", DateTime.now());
+      print("action cosntructor in delete table ");
+      EAction a = EAction(
+          action_type: "mail",
+          action_value: "delete",
+          source_field: "",
+          destination_field: "",
+          TDatetime: DateTime.now(),
+          object_id: element.mid);
+      await db.insertActionData(a);
+      print("action after in delete table ");
     }
     setState(() {});
   }

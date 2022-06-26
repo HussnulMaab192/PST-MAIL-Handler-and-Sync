@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pst1/Screens/FirstTimeScreens/registered_account.dart';
-import 'package:pst1/Screens/selectServer.dart';
 import '../../Styles/app_colors.dart';
 import '../../Widgets/ButtonClass.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../providers/Db.dart';
+import '../global_accounts.dart';
 
 class ConfigureMyAccount extends StatefulWidget {
   const ConfigureMyAccount({Key? key}) : super(key: key);
@@ -12,6 +15,48 @@ class ConfigureMyAccount extends StatefulWidget {
 }
 
 class _ConfigureMyAccountState extends State<ConfigureMyAccount> {
+  late DBHandler db;
+  @override
+  void initState() {
+    DBHandler.getInstnace().then((value) {
+      // ignore: unnecessary_null_comparison
+      if (value == null) {
+        print('Object not created...');
+      } else {
+        print('object created successfuly...');
+        db = value;
+        //     fetchAccountData();
+        setState(() {
+          if (db.getDB() == null) {
+            print('returning... ');
+            return;
+          }
+        });
+        fetchAccountData();
+      }
+    });
+
+    super.initState();
+  }
+
+  void fetchAccountData() async {
+    DBHandler db = await DBHandler.getInstnace();
+    GlobalList.accountsList = await db.selectAccountData();
+
+    print('account list is in home ${GlobalList.accountsList}');
+
+    print('Printing..Accounts..');
+    GlobalList.accountsList!.forEach(
+        ((element) => print('${element.acc_mail}  ${element.acc_type}')));
+
+    setState(() {});
+  }
+
+  // addBoolToSF() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   prefs.setBool('boolValue', true);
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Container(

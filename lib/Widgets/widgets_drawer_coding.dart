@@ -39,8 +39,8 @@ Widget myDrawer(BuildContext context, int accId, final accmMail) {
                       child: ExpansionTile(
                           leading: const Icon(Icons.folder_special),
                           title: Text(foldersinfo[i].name),
-                          children: getChildHirerachy(
-                              foldersinfo[i].childrens, context),
+                          children: getChildHirerachy(foldersinfo[i].childrens,
+                              context, foldersinfo[i].id),
                           trailing: IconButton(
                               onPressed: () {
                                 showDialog(
@@ -119,10 +119,18 @@ Widget myDrawer(BuildContext context, int accId, final accmMail) {
                                                 Navigator.of(context).push(
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            PopupDislpay(
-                                                                fdetail: InboxPage
-                                                                    .finfo)));
-                                             
+                                                            // PopupDislpay(
+                                                            //     fdetail: InboxPage
+                                                            //         .finfo)
+
+                                                            PopupDislpay.con(
+                                                                fdetail:
+                                                                    InboxPage
+                                                                        .finfo,
+                                                                index:
+                                                                    foldersinfo[
+                                                                            i]
+                                                                        .id)));
                                               },
                                               child: const Text("Move")),
                                           TextButton(

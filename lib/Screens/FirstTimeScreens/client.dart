@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_collection_literals, deprecated_member_use, prefer_typing_uninitialized_variables, unnecessary_null_comparison
 
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,7 +46,7 @@ class SocketClientState extends State<SocketClient> {
     return Scaffold(
         key: scaffoldKey,
         appBar: AppBar(
-          title: Text("Client"),
+          title: const Text("Client"),
           backgroundColor: Colors.deepPurple,
         ),
         body: Column(
@@ -71,20 +72,20 @@ class SocketClientState extends State<SocketClient> {
     return Card(
       child: ListTile(
         dense: true,
-        leading: Text("Server IP"),
+        leading: const Text("Server IP"),
         title: TextField(
           controller: ipCon,
           decoration: InputDecoration(
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
               isDense: true,
-              enabledBorder: OutlineInputBorder(
+              enabledBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(5)),
                 borderSide: BorderSide(color: Colors.grey),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                borderSide: BorderSide(color: Colors.grey),
+              focusedBorder: const OutlineInputBorder(
+                borderRadius: const BorderRadius.all(Radius.circular(5)),
+                borderSide: const BorderSide(color: Colors.grey),
               ),
               filled: true,
               fillColor: Colors.grey[50]),
@@ -144,10 +145,10 @@ class SocketClientState extends State<SocketClient> {
           controller: msgCon,
           // ignore: prefer_const_constructors
           decoration: InputDecoration(
-              hintText: "Enter Message", border: UnderlineInputBorder()),
+              hintText: "Enter Message", border: const UnderlineInputBorder()),
         ),
         trailing: IconButton(
-          icon: Icon(Icons.send_rounded),
+          icon: const Icon(Icons.send_rounded),
           color: Colors.deepPurple,
           disabledColor: Colors.grey,
           onPressed: (clientSocket != null) ? submitMessage : null,
@@ -171,12 +172,23 @@ class SocketClientState extends State<SocketClient> {
             "Connected to ${socket.remoteAddress.address}:${socket.remotePort}");
         socket.listen(
           (onData) {
-            print(String.fromCharCodes(onData).trim());
+            String str = onData.length.toString();
+            print("length of str is " +
+                str); //String.fromCharCode(onData).trim();
+
+            RegExp r = RegExp('');
+
+            String result = String.fromCharCodes(onData).trim();
+            result = result.split("_XXX_")[1];
+            print(result);
             setState(() {
-              items.insert(
-                  0,
-                  MessageItem(clientSocket.remoteAddress.address,
-                      String.fromCharCodes(onData).trim()));
+              result = String.fromCharCodes(onData).trim();
+              // if (result1.contains('_XXX_')) {
+              String result1 = result.split('_XXX_')[1];
+              if (result.contains('_XXX_')) {
+                items.insert(0,
+                    MessageItem(clientSocket.remoteAddress.address, result1));
+              }
             });
           },
           onDone: onDone,
@@ -209,18 +221,6 @@ class SocketClientState extends State<SocketClient> {
 
   void sendMessage(String message) {
     clientSocket.write("$message\n");
-  }
-
-  void _storeServerIP() async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    sp.setString("serverIP", ipCon.text);
-  }
-
-  void _loadServerIP() async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    setState(() {
-      ipCon.text = localIP;
-    });
   }
 
   void submitMessage() {

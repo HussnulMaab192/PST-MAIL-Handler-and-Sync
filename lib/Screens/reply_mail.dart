@@ -7,6 +7,7 @@ import 'package:pst1/Screens/textFieldBuilder.dart';
 
 import '../Styles/app_colors.dart';
 import '../Widgets/ButtonClass.dart';
+import '../models/action.dart';
 import '../models/mail.dart';
 import '../models/folder.dart';
 import '../providers/db.dart';
@@ -49,28 +50,36 @@ class _ReplyMailState extends State<ReplyMail> {
   //   setState(() {});
   // }
 
-  void moveEmails(String fid) {
+  void moveEmails(String fid) async {
     List<Email> selectEmail =
         mails.where((element) => element.Selected).toList();
     mails.removeWhere((element) => element.Selected);
     for (var element in selectEmail) {
       db.UpdateEmail(int.parse(fid), element.mid);
-      db.insertActionData(
-          "mail", "move", "${element.fid.toString()}", "$fid", DateTime.now());
+      // db.insertActionData(1, "mail", "move", "${element.fid.toString()}",
+      //     "$fid", DateTime.now(), element.mid);
+
+
+      //     EAction a = EAction(1, "mail", "move", "${element.fid.toString()}", "$fid",
+      //     DateTime.now(), element.mid);
+      // await db.insertActionData(a);
     }
 
-    //db.insertAccountData("mail","mail","move","$fid");
     setState(() {});
   }
 
-  void delete() {
+  void delete() async {
     List<Email> selectEmail =
         mails.where((element) => element.Selected).toList();
     mails.removeWhere((element) => element.Selected);
     for (var element in selectEmail) {
       db.deleteMail(element.mid);
-      db.insertActionData(
-          "mail", "delete", element.fid.toString(), "", DateTime.now());
+      // db.insertActionData(1, "mail", "delete", element.fid.toString(), "",
+      //     DateTime.now(), element.mid);
+
+      // EAction a = EAction(1, "mail", "delete", "${element.fid.toString()}", "",
+      //     DateTime.now(), element.mid);
+      // await db.insertActionData(a);
     }
     setState(() {});
   }

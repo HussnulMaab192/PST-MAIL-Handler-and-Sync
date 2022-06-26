@@ -1,10 +1,7 @@
-// ignore: file_names
-import 'package:pst1/Screens/inbox_page.dart';
-import 'package:pst1/models/folder.dart';
 import 'package:sqflite/sqflite.dart';
-
 import '../HelperClasses/folder_details.dart';
 import '../models/account.dart';
+import '../models/action.dart';
 import '../models/mail.dart';
 
 class DBHandler {
@@ -62,7 +59,7 @@ class DBHandler {
         print(
             'emails table created....'); //action type==mail pr ya folder pr laga?
         query =
-            "create table actions(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ,type Text ,value Text ,source Text,destination Text, TDatetime datetime)";
+            "create table actions(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ,type Text ,value Text ,source Text,destination Text, TDatetime datetime, object_id integer )";
         await db.execute(query);
         _db = db;
 
@@ -81,7 +78,7 @@ class DBHandler {
   Future<void> insertData(int id, String name, int accId, int folderId) async {
     getNextid("folders").then((value) async {
       {
-        print('Executing insertion command in Action Table...');
+        print('Executing insertion command in folders Table...');
         await _db!.rawInsert(
             "insert into folders values ('$value', '$name', '$accId','$folderId')");
         print('Command executed');
@@ -144,17 +141,8 @@ class DBHandler {
     print('Command executed');
   }
 
-
-
-  Future<void> insertIntoOriginalMails(
-  
-   dynamic fid,
-   dynamic accountId,
-   String sender,
-   String subject,
-   String mData,
-   String body
-      ) async {
+  Future<void> insertIntoOriginalMails(dynamic fid, dynamic accountId,
+      String sender, String subject, String mData, String body) async {
     getNextid("emails").then((value) async {
       {
         print('Executing insertion command in original Emails Table...');
@@ -164,6 +152,7 @@ class DBHandler {
       }
     });
   }
+
   Future<void> insertEmailData(
     Database db,
   ) async {
@@ -256,18 +245,11 @@ class DBHandler {
     print('Command executed');
   }
 
-  //         "create table accounts(id integer primary key ,type Text,email Text, pass Text)";
-
-  Future<void> insertActionData(String actionType, String aValue,
-      String sourceField, String destField, DateTime tDatetime) async {
-    getNextid("actions").then((value) async {
-      {
-        print('Executing insertion command in Action Table...');
-        await _db!.rawInsert(
-            "insert into actions values ('$value','$actionType','$aValue', '$sourceField', '$destField', '$tDatetime')");
-        print('Command executed in Actions table ');
-      }
-    });
+  Future<void> insertActionData(EAction a) async {
+    print("Executing insertion commonds in Actions table ");
+    int t = await _db!.insert('actions', a.toMap());
+    print('Command executed in Actions table ');
+    print(t);
   }
 
   Future<void> insertIntoAccountData(
@@ -283,7 +265,6 @@ class DBHandler {
       print('Executing insertion command in Accounts Table...');
       await _db!.rawInsert(
           "insert into accounts values ('$value','$type', '$email', '$password', '$confirmPassword','$smtpServer','$smtpPortNo','$imapServer','$imapPortNo')");
-
       print('data inserted in Accounts table ');
     });
   }
@@ -337,8 +318,6 @@ class DBHandler {
     await _db!.rawUpdate(query);
   }
 
-
-
   void UpdateFolder(int id, int pid) async {
     print('folder_id: $id');
     print('parent_id : $pid');
@@ -357,46 +336,6 @@ class DBHandler {
     });
     return id;
   }
-
-  // Future<List<DropBoxFolders>> GetFolder() async {
-  //   List<DropBoxFolders> folders = [];
-  //   print('fetching data.... ');
-  //   var result = await _db!.rawQuery("select * from folders");
-  //   print('Result ::');
-  //   print(result);
-  //   result.forEach((element) {
-  //     DropBoxFolders dbf = DropBoxFolders();
-  //     dbf.name = element["name"].toString();
-  //     dbf.pid = element["id"] as int;
-  //     dbf.fid = element["folder_id"] as int;
-  //     folders.add(dbf);
-
-  //     print("name is :::" + dbf.name.toString());
-  //     print("id is :::" + dbf.pid.toString());
-  //   });
-  //   for (int i = 0; i < folders.length; i++) {
-  //     String q = "Select name from folders where folder_id='" +
-  //         folders[i].pid.toString() +
-  //         "'";
-  //     print("Query =$q");
-
-  //     var rresult = await _db!.rawQuery(q);
-  //     print('executed...');
-
-  //     rresult.forEach((element) {
-  //       folders[i].childfodlers.add(
-  //             element["name"].toString(),
-  //           );
-  //       folders[i].childfodlers.add(
-  //             element["id"].toString(),
-  //           );
-  //     });
-  //     print('Returning   ');
-  //     print(folders);
-  //   }
-
-  //   return folders;
-  // }
 
   Future<List<FolderDetail>> GetFoldersDetail() async {
     List<FolderDetail> folders = [];
@@ -419,6 +358,4 @@ class DBHandler {
 
     return folders;
   }
-
-
 }

@@ -3,6 +3,7 @@ import 'package:pst1/Screens/FirstTimeScreens/client.dart';
 import 'package:pst1/Screens/inbox_page.dart';
 import 'package:pst1/Screens/selectServer.dart';
 import 'package:pst1/providers/db.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../Styles/app_colors.dart';
 import '../global_accounts.dart';
 
@@ -23,6 +24,8 @@ class _RegisteredAccountsState extends State<RegisteredAccounts> {
   }
 
   void fetchAccountData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('boolValue', true);
     DBHandler db = await DBHandler.getInstnace();
     GlobalList.accountsList = await db.selectAccountData();
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pst1/Screens/splashScreen.dart';
-import 'dart:io';
+
 import 'FirstTimeScreens/client.dart';
 import 'FirstTimeScreens/flutter_mails_sender.dart';
 
@@ -10,8 +10,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
- 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,8 +18,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const Splash()
-      // SocketClient()
-        );
+        home: const Splash());
+    //SocketClient());
   }
 }
