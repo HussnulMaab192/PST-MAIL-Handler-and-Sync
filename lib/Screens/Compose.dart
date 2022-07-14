@@ -242,7 +242,9 @@ class _ComposeState extends State<Compose> {
       ),
     );
   }
-
+// git add .
+// git commit -m "adfja"
+// git push origin main 
   void sendEmail(var sender, var spass, var recipientsEmail, var subject,
       var body, var smptpServer, var smtpPortNo) async {
     String smtpServerName = smptpServer;
