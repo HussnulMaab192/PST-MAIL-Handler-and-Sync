@@ -1,8 +1,22 @@
 class FolderDetail {
-  late int id;
+  dynamic id;
   late String name;
-  late int fid;
+  dynamic fid;
   List<FolderDetail> childrens = [];
+  FolderDetail() {}
+  FolderDetail.jsonMap(Map<String, dynamic> map) {
+    id = map['fid'];
+    name = map['fName'];
+    fid = map['pid'];
+  }
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> mp = <String, dynamic>{};
+
+    mp['id'] = fid;
+    mp['name'] = name;
+    mp['folder_id'] = fid;
+    return mp;
+  }
 
   void getChildHeirachy(List<FolderDetail> sub, FolderDetail f) {
     print('inside get herirchy...');
@@ -24,21 +38,17 @@ class FolderDetail {
   List<FolderDetail> getFolderHirerachy(List<FolderDetail> allfolders) {
     print('printing all folders...');
     allfolders.forEach((e) {
-      print(e.name.toString() +
-          " id::" +
-          e.id.toString() +
-          " pid" +
-          e.fid.toString());
+      print(e.name.toString() + " id::" + e.id.toString() + " pid" + e.fid);
     });
     print(allfolders);
     List<FolderDetail> flist = [];
-    var pfolders = allfolders.where((element) => element.fid == -1);
+    var pfolders = allfolders.where((element) => int.parse(element.fid) == -1);
     pfolders.forEach((e) {
       print(e);
       flist.add(e);
     });
 
-    var i = allfolders.where((element) => element.fid != -1);
+    var i = allfolders.where((element) => element.fid == -1);
     List<FolderDetail> subfolders = [];
     i.forEach((element) {
       subfolders.add(element);

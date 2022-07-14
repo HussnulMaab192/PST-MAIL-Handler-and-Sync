@@ -3,12 +3,19 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pst1/HelperClasses/folder_details.dart';
+import 'package:pst1/models/folder.dart';
+import 'package:pst1/models/mail.dart';
+import 'package:pst1/providers/db.dart';
 
 late SocketClientState pageState;
 
 class SocketClient extends StatefulWidget {
-  //544283
+  String? mailId;
+  SocketClient({
+    Key? key,
+    required this.mailId,
+  }) : super(key: key);
   @override
   // ignore: no_logic_in_create_state
   SocketClientState createState() {
@@ -24,7 +31,6 @@ class SocketClientState extends State<SocketClient> {
   List<MessageItem> items = [];
 
   TextEditingController ipCon = TextEditingController();
-  TextEditingController msgCon = TextEditingController();
   int port = 46460;
 
   var clientSocket;
@@ -53,7 +59,7 @@ class SocketClientState extends State<SocketClient> {
           children: <Widget>[
             connectArea(),
             messageListArea(),
-            submitArea(),
+            //  submitArea(),
           ],
         ));
   }
@@ -84,8 +90,8 @@ class SocketClientState extends State<SocketClient> {
                 borderSide: BorderSide(color: Colors.grey),
               ),
               focusedBorder: const OutlineInputBorder(
-                borderRadius: const BorderRadius.all(Radius.circular(5)),
-                borderSide: const BorderSide(color: Colors.grey),
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+                borderSide: BorderSide(color: Colors.grey),
               ),
               filled: true,
               fillColor: Colors.grey[50]),
@@ -138,24 +144,24 @@ class SocketClientState extends State<SocketClient> {
     );
   }
 
-  Widget submitArea() {
-    return Card(
-      child: ListTile(
-        title: TextField(
-          controller: msgCon,
-          // ignore: prefer_const_constructors
-          decoration: InputDecoration(
-              hintText: "Enter Message", border: const UnderlineInputBorder()),
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.send_rounded),
-          color: Colors.deepPurple,
-          disabledColor: Colors.grey,
-          onPressed: (clientSocket != null) ? submitMessage : null,
-        ),
-      ),
-    );
-  }
+  // Widget submitArea() {
+  //   return Card(
+  //     child: ListTile(
+  //       title: TextField(
+  //         controller: msgCon,
+  //         // ignore: prefer_const_constructors
+  //         decoration: InputDecoration(
+  //             hintText: "Enter Message", border: const UnderlineInputBorder()),
+  //       ),
+  //       trailing: IconButton(
+  //         icon: const Icon(Icons.send_rounded),
+  //         color: Colors.deepPurple,
+  //         disabledColor: Colors.grey,
+  //         onPressed: (clientSocket != null) ? submitMessage : null,
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void connectToServer() async {
     if (ipCon.text == "") {
@@ -170,25 +176,94 @@ class SocketClientState extends State<SocketClient> {
         });
         showSnackBarWithKey(
             "Connected to ${socket.remoteAddress.address}:${socket.remotePort}");
+        submitMessage();
         socket.listen(
           (onData) {
-            String str = onData.length.toString();
-            print("length of str is " +
-                str); //String.fromCharCode(onData).trim();
+            //     print("ondata ----->>>>>> $onData");
+            //  String data = new String(onData,0,onData.length,);
+            //  String str = onData.length.toString();
+            //String.fromCharCode(onData).trim();
 
-            RegExp r = RegExp('');
+            var res = String.fromCharCodes(onData).trim();
+            res = res.split("_yyy_")[1];
+            print("Sting convrt ----->>>>>> $res");
+            //  print(object)
+            // print("Result----------> = : ${result} ");
+            // List res = onData;
 
-            String result = String.fromCharCodes(onData).trim();
-            result = result.split("_XXX_")[1];
-            print(result);
+            // result = result.split("_XXX_")[1];
             setState(() {
-              result = String.fromCharCodes(onData).trim();
+              // result = String.fromCharCodes(onData).trim();
+              //List l = res.split("}");
+              // result
+              //     .
               // if (result1.contains('_XXX_')) {
-              String result1 = result.split('_XXX_')[1];
-              if (result.contains('_XXX_')) {
-                items.insert(0,
-                    MessageItem(clientSocket.remoteAddress.address, result1));
-              }
+              //     String result1 = result.split('_XXX_')[1];
+              //  var json = ;
+              // var mailRes = ;
+              // print("mails data is :" + mailRes);
+
+              //  Email e = Email.fromJsonMap();
+              //print("subject of e is :" + e.subject);
+              Email e = Email.jsonMap(jsonDecode(res));
+              print(e.subject);
+  
+              Email obj = Email(
+                mid: e.mid,
+                fid: e.fid,
+                sender: e.sender,
+                subject: e.subject,
+                body: e.body,
+                deletedFlag: "false",
+                accountId: 1,
+                fName: e.fName,
+              );
+              insertMailsIntoDb(obj);
+              // var folderRes = jsonDecode(mailRes);
+              // FolderDetail f = FolderDetail.jsonMap(folderRes);
+              // print("body is :" + f.name + " " + "id is  " + f.name);
+              // insertFoldersIntoDb(f);
+              // items.insert(
+              //     0, MessageItem(clientSocket.remoteAddress.address, result));
+
+              // var updateObj = json.decode(result);
+              //   Email mail = Email.jsonMap(jsonDecode(result));
+
+              //  print("My mails in client are :" + mail.toString());
+// / 192.168.0.120
+              // if (!result1.contains('_XXX_')) {
+              //   if (result1.startsWith('sender=')) {
+              //     if (result1.contains("Pst File Not Found")) {
+              //       items.insert(
+              //           0,
+              //           MessageItem(
+              //               clientSocket.remoteAddress.address, result1));
+              //     } else {
+              //       final dummySender = result1.split("Subject=");
+              //       final mysender = dummySender[0].split("sender=");
+              //       final sender = mysender[1];
+              //       final dummySubject = dummySender[1].split("body=");
+              //       final subject = dummySubject[0];
+              //       final body = dummySubject[1];
+              //       Email e = Email(
+              //           fid: 0,
+              //           sender: sender,
+              //           subject: subject,
+              //           mData: "mData",
+              //           body: body,
+              //           deletedFlag: "false",
+              //           accountId: 1);
+              //       insertMailsIntoDb(e);
+              //       //insertMailsInDb(0, 1, sender, subject, "mData", body);
+
+              //       print("After mails inserted in db ");
+              //       items.insert(
+              //           0,
+              //           MessageItem(
+              //               clientSocket.remoteAddress.address, result1));
+              //     }
+              //   }
+              //}
             });
           },
           onDone: onDone,
@@ -220,16 +295,21 @@ class SocketClientState extends State<SocketClient> {
   }
 
   void sendMessage(String message) {
-    clientSocket.write("$message\n");
+    var commond = utf8.encode(message);
+    clientSocket.add(commond);
+    clientSocket.write('');
+
+    commond = utf8.encode('READ');
+    clientSocket.add(commond);
+    //clientSocket.send();
+    clientSocket.write("");
   }
 
   void submitMessage() {
-    if (msgCon.text.isEmpty) return;
     setState(() {
-      items.insert(0, MessageItem(localIP, msgCon.text));
+      items.insert(0, MessageItem(localIP, widget.mailId!));
     });
-    sendMessage(msgCon.text);
-    msgCon.clear();
+    sendMessage(widget.mailId!);
   }
 
   showSnackBarWithKey(String message) {
@@ -243,6 +323,24 @@ class SocketClientState extends State<SocketClient> {
         ),
       ));
   }
+
+  void insertMailsIntoDb(Email a) async {
+    DBHandler db = await DBHandler.getInstnace();
+    db.insertIntoOriginalMails(a);
+  }
+
+  void insertFoldersIntoDb(FolderDetail f) async {
+    DBHandler db = await DBHandler.getInstnace();
+    db.insertIntoFolderOriginal(f);
+  }
+
+//   void insertMailsInDb(int fId, int accId, String sender, String subject,
+//       String mData, String body) async {
+//     DBHandler db = await DBHandler.getInstnace();
+//     await db.insertIntoOriginalMails(
+//         1, sender, subject, mData, body, "false", 1);
+//     print("inside completion of insertmailsInDb ");
+//   }
 }
 
 class MessageItem {

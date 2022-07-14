@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:pst1/Styles/app_colors.dart';
-
 import '../../../models/mail.dart';
 import '../../../providers/db.dart';
 
@@ -20,7 +18,6 @@ class _JunkState extends State<Junk> {
   late DBHandler db;
 
   void handleTimeout() {
-    // callback function
     print('Inside handle time out.. ');
     DBHandler.getInstnace().then((value) {
       // ignore: unnecessary_null_comparison
@@ -32,7 +29,7 @@ class _JunkState extends State<Junk> {
         setState(() {
           while (db.getDB() == null) continue;
           print(db);
-          _printData(5, widget.accId);
+          _printData("Junk", widget.accId);
           setState(() {});
         });
       }
@@ -48,8 +45,8 @@ class _JunkState extends State<Junk> {
     );
   }
 
-  void _printData(int fid, int accId) async {
-    mails = await db.getData(fid, accId);
+  void _printData(String fname , int accId) async {
+    mails = await db.getData(fname, accId);
     print('Printing..Mails..');
     mails.forEach(((element) => print('${element.body}  ${element.fid}')));
     setState(() {});
@@ -167,6 +164,16 @@ class _JunkState extends State<Junk> {
             itemCount: mails.length,
             itemBuilder: ((context, index) {
               return InkWell(
+                onTap: () {
+                  // Navigator.of(context).push(MaterialPageRoute(
+                  //     builder: (context) => ReplyMail(
+                  //           mid: mails[index].mid,
+                  //           fid: mails[index].fid,
+                  //           subject: mails[index].subject,
+                  //           body: mails[index].body,
+                  //           sender: mails[index].sender,
+                  //         )));
+                },
                 key: Key(mails[index].mid.toString()),
                 splashColor: Colors.blue,
                 onLongPress: () {
@@ -190,14 +197,14 @@ class _JunkState extends State<Junk> {
                           ? const Icon(Icons.done)
                           : Text(mails[index].subject[0]),
                     ),
-                    title:
-                        Text('${mails[index].subject}   ${mails[index].fid} ${mails[index].accountId} '),
-                    subtitle: Text(
-                      mails[index].body,
-                      style: const TextStyle(
-                        fontSize: 12,
-                      ),
-                    ),
+                    title: Text(
+                        '${mails[index].subject}   ${mails[index].fid} ${mails[index].accountId} '),
+                    // subtitle: Text(
+                    //   mails[index].body,
+                    //   style: const TextStyle(
+                    //     fontSize: 12,
+                    //   ),
+                    // ),
                     trailing: Icon(Icons.star_border_outlined),
                   ),
                 ),

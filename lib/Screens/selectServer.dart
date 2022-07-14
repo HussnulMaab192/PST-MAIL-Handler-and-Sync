@@ -122,7 +122,7 @@ class _SelectServerState extends State<SelectServer> {
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) =>
-                                    const ConfigureAccount(type: "Outlook")));
+                                    const ConfigureAccount(type: "outlook")));
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,

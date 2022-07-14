@@ -1,12 +1,12 @@
 class DropBoxFolders {
   String? name;
-  late int pid;
-  late int fid;
-  List<String> childfodlers = [];
+  dynamic pid;
+  dynamic fid;
+  List<dynamic> childfodlers = [];
 }
 
 class Folder {
-  late int fid;
+  dynamic fid;
   late String fname;
 
   // ignore: non_constant_identifier_names

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:pst1/Screens/inbox_page.dart';
+import 'package:pst1/Screens/reply_mail.dart';
 import 'package:pst1/Styles/app_colors.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import '../models/mail.dart';
@@ -9,8 +10,18 @@ import '../providers/db.dart';
 
 class SearchPage extends StatefulWidget {
   dynamic accId;
+  dynamic portNo;
+  dynamic smtp;
+  dynamic pswd;
   dynamic accMail;
-  SearchPage({Key? key, this.accId, this.accMail}) : super(key: key);
+  SearchPage(
+      {Key? key,
+      required this.accId,
+      required this.accMail,
+      required this.portNo,
+      required this.smtp,
+      required this.pswd})
+      : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -23,8 +34,8 @@ class _SearchPageState extends State<SearchPage> {
   int c = 0;
   bool menu = false;
   late DBHandler db;
-  void _printData(int fid, int accId) async {
-    mails = await db.getData(fid, accId);
+  void _printData(String fname, int accId) async {
+    mails = await db.getData(fname, accId);
     print(mails);
     print('Printing..Mails..');
     mails.forEach(((element) => print('${element.body}  ${element.fid}')));
@@ -63,7 +74,7 @@ class _SearchPageState extends State<SearchPage> {
         db = value;
         setState(() {
           while (db.getDB() == null) continue;
-          _printData(0, widget.accId);
+          _printData('"Inbox"', widget.accId);
           print(db);
           print('Outside loop');
           setState(() {});
@@ -213,6 +224,9 @@ class _SearchPageState extends State<SearchPage> {
                               db: db,
                               accId: widget.accId,
                               accmail: widget.accMail,
+                              portNo: widget.portNo,
+                              smtp: widget.smtp,
+                              pswd: widget.pswd,
                             )));
               } else if (i == 1) {
                 Navigator.pushReplacement(
@@ -221,6 +235,9 @@ class _SearchPageState extends State<SearchPage> {
                         builder: (context) => SearchPage(
                               accId: widget.accId,
                               accMail: widget.accMail,
+                              smtp: widget.smtp,
+                              portNo: widget.portNo,
+                              pswd: widget.pswd,
                             )));
               }
             }),
@@ -263,70 +280,86 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 ),
               ),
-              _searchController!.text.isNotEmpty && mailsOnSearch.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Icons.search_off_outlined,
-                            size: 50,
-                            color: AppColors.blue,
-                          ),
-                          Text("no result found!"),
-                        ],
+              if (_searchController!.text.isNotEmpty && mailsOnSearch.isEmpty)
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.search_off_outlined,
+                        size: 50,
+                        color: AppColors.blue,
                       ),
-                    )
-                  : ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: _searchController!.text.isNotEmpty
-                          ? mailsOnSearch.length
-                          : mails.length,
-                      itemBuilder: ((context, index) {
-                        return InkWell(
-                          key: Key(mails[index].mid.toString()),
-                          splashColor: Colors.blue,
-                          onLongPress: () {
-                            setState(() {
-                              mails[index].color = !mails[index].color;
-                              mails[index].Selected = !mails[index].Selected;
-                              if (mails[index].Selected == true) {
-                                c++;
-                                menu = true;
-                              } else {
-                                c--;
-                                if (c == 0) menu = false;
-                              }
-                            });
-                          },
-                          child: Card(
-                            color: mails[index].color
-                                ? Colors.white
-                                : Colors.blueAccent,
-                            elevation: 1,
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                child: mails[index].Selected
-                                    ? const Icon(Icons.done)
-                                    : Text(mails[index].subject[0]),
-                              ),
-                              title: Text(_searchController!.text.isNotEmpty
-                                  ? '${mailsOnSearch[index].subject}   ${mailsOnSearch[index].fid} '
-                                  : '${mails[index].subject}   ${mails[index].fid}    ${mails[index].accountId} '),
-                              subtitle: Text(
-                                _searchController!.text.isNotEmpty
-                                    ? mailsOnSearch[index].body
-                                    : mails[index].body,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              trailing: const Icon(Icons.star_border_outlined),
+                      Text("no result found!"),
+                    ],
+                  ),
+                )
+              else
+                ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: _searchController!.text.isNotEmpty
+                        ? mailsOnSearch.length
+                        : mails.length,
+                    itemBuilder: ((context, index) {
+                      return InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ReplyMail(
+                                    mid: mails[index].mid,
+                                    fid: mails[index].fid,
+                                    subject: mails[index].subject,
+                                    body: mails[index].body,
+                                    sender: mails[index].sender,
+                                    accId: widget.accId,
+                                    accMail: widget.accMail,
+                                    portNo: widget.portNo,
+                                    smtpServer: widget.smtp,
+                                    pswd: widget.pswd,
+                                  )));
+                        },
+                        key: Key(mails[index].mid.toString()),
+                        splashColor: Colors.blue,
+                        onLongPress: () {
+                          setState(() {
+                            mails[index].color = !mails[index].color;
+                            mails[index].Selected = !mails[index].Selected;
+                            if (mails[index].Selected == true) {
+                              c++;
+                              menu = true;
+                            } else {
+                              c--;
+                              if (c == 0) menu = false;
+                            }
+                          });
+                        },
+                        child: Card(
+                          color: mails[index].color
+                              ? Colors.white
+                              : Colors.blueAccent,
+                          elevation: 1,
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              child: mails[index].Selected
+                                  ? const Icon(Icons.done)
+                                  : Text(mails[index].subject[0]),
                             ),
+                            title: Text(_searchController!.text.isNotEmpty
+                                ? '${mailsOnSearch[index].subject}  } '
+                                : '${mails[index].subject}    ${mails[index].accountId} '),
+                            // subtitle: Text(
+                            //   _searchController!.text.isNotEmpty
+                            //       ? mailsOnSearch[index].body
+                            //       : mails[index].body,
+                            //   style: const TextStyle(
+                            //     fontSize: 12,
+                            //   ),
+                            // ),
+                            trailing: const Icon(Icons.star_border_outlined),
                           ),
-                        );
-                      })),
+                        ),
+                      );
+                    })),
             ]),
           ),
         ));

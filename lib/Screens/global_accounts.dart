@@ -1,6 +1,8 @@
 // ignore_for_file: unnecessary_null_comparison
 
 import 'package:flutter/material.dart';
+import 'package:pst1/Screens/contacts_data.dart';
+import 'package:pst1/models/contact.dart';
 
 import '../models/account.dart';
 
@@ -10,6 +12,7 @@ import '../providers/db.dart';
 class GlobalList extends StatefulWidget {
   static List<Account>? accountsList;
   static List<Email> mails = [];
+  static List<Contact> contactsList=[];
   static late DBHandler db;
 
   const GlobalList({Key? key}) : super(key: key);

@@ -1,17 +1,11 @@
 // ignore_for_file: unnecessary_string_interpolations
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:pst1/Screens/textFieldBuilder.dart';
-
 import '../Styles/app_colors.dart';
-import '../Widgets/ButtonClass.dart';
-import '../models/action.dart';
 import '../models/mail.dart';
-import '../models/folder.dart';
 import '../providers/db.dart';
-import 'inbox_page.dart';
+import 'compose.dart';
 
 class ReplyMail extends StatefulWidget {
   final mid;
@@ -19,12 +13,23 @@ class ReplyMail extends StatefulWidget {
   final subject;
   final body;
   final sender;
-  const ReplyMail({
+
+  dynamic portNo;
+  dynamic smtpServer;
+  dynamic pswd;
+  dynamic accMail;
+  dynamic accId;
+  ReplyMail({
     required this.mid,
     required this.fid,
     required this.subject,
     required this.body,
     required this.sender,
+    required this.portNo,
+    required this.smtpServer,
+    required this.pswd,
+    required this.accMail,
+    required this.accId,
     Key? key,
   }) : super(key: key);
 
@@ -58,7 +63,6 @@ class _ReplyMailState extends State<ReplyMail> {
       db.UpdateEmail(int.parse(fid), element.mid);
       // db.insertActionData(1, "mail", "move", "${element.fid.toString()}",
       //     "$fid", DateTime.now(), element.mid);
-
 
       //     EAction a = EAction(1, "mail", "move", "${element.fid.toString()}", "$fid",
       //     DateTime.now(), element.mid);
@@ -95,7 +99,6 @@ class _ReplyMailState extends State<ReplyMail> {
         ],
         title: const Text('Inbox'),
         backgroundColor: AppColors.lightblueshade,
-        // leading: IconButton(icon: Icon(Icons.fiber_new,),onPressed: (){},),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -105,19 +108,9 @@ class _ReplyMailState extends State<ReplyMail> {
             ),
             Card(
               child: ListTile(
-                title: Center(
-                  child: Row(
-                    children: [
-                      Text("Subject:"),
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Text(
-                          widget.subject.toString(),
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                      ),
-                    ],
-                  ),
+                title: Text(
+                  widget.subject.toString(),
+                  style: const TextStyle(fontSize: 20),
                 ),
               ),
             ),
@@ -127,83 +120,64 @@ class _ReplyMailState extends State<ReplyMail> {
             ),
             Card(
               child: ListTile(
-                  leading: CircleAvatar(
-                    child: Text(widget.sender[0].toString()),
-                  ),
-                  title: Text(
-                    widget.sender.toString(),
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  subtitle: Text("mabimalik192@gmail.com"),
-                  trailing: PopupMenuButton(
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                          child: GestureDetector(
-                        onTap: (() => showModalBottomSheet(
-                              context: context,
-                              builder: ((builder) => bottomSheet()),
-                            )),
-                        child: Row(
-                          children: const [
-                            Icon(
-                              Icons.move_to_inbox,
-                              color: Colors.black,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text("Move to ")
-                          ],
-                        ),
-                      )),
-                      PopupMenuItem(
-                          child: GestureDetector(
-                        onTap: () {
-                          moveEmails("4");
-                          delete();
-                        },
-                        child: Row(
-                          children: const [
-                            Icon(
-                              Icons.delete,
-                              color: Colors.black,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text("Delete "),
-                          ],
-                        ),
-                      )),
-                    ],
-                  )),
+                leading: CircleAvatar(
+                  child: Text(widget.sender[0].toString()),
+                ),
+                title: Text(
+                  widget.sender.toString(),
+                  style: const TextStyle(fontSize: 18),
+                ),
+                subtitle: const Text("mabimalik192@gmail.com"),
+              ),
             ),
             const SizedBox(
               height: 5,
             ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.6,
-              width: MediaQuery.of(context).size.width * 0.97,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(15),
-                ),
-                border: Border.all(
-                  color: Colors.blue,
-                  width: 1.0,
-                  style: BorderStyle.solid,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Text(
+
+            Card(
+              child: ListTile(
+                title: Text(
                   widget.body.toString(),
                   style: const TextStyle(fontSize: 20),
                 ),
               ),
             ),
-            buildTextField(
-                Icons.reply, "Enter your Reply", false, true, replyController),
+
+            // Container(
+            //   height: MediaQuery.of(context).size.height * 0.6,
+            //   width: MediaQuery.of(context).size.width * 0.97,
+            //   decoration: BoxDecoration(
+            //     borderRadius: const BorderRadius.all(
+            //       Radius.circular(15),
+            //     ),
+            //     border: Border.all(
+            //       color: Colors.blue,
+            //       width: 1.0,
+            //       style: BorderStyle.solid,
+            //     ),
+            //   ),
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(15.0),
+            //     child: Text(
+            //       widget.body.toString(),
+            //       style: const TextStyle(fontSize: 20),
+            //     ),
+            //   ),
+            // ),
+
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => Compose(
+                            sender: widget.accId,
+                            portNo: widget.portNo,
+                            smtpServer: widget.smtpServer,
+                            pswd: widget.pswd,
+                            accMail: widget.accMail,
+                            accId: widget.accId,
+                          )));
+                },
+                child: const Text("Reply")),
             // // the container for sender anme
             // Container()
           ],
@@ -224,8 +198,8 @@ class _ReplyMailState extends State<ReplyMail> {
             moveEmails("1");
           },
           child: const ListTile(
-            leading: const Icon(Icons.drafts_outlined),
-            title: const Text("Drafts"),
+            leading: Icon(Icons.drafts_outlined),
+            title: Text("Drafts"),
           ),
         ),
         InkWell(
@@ -233,8 +207,7 @@ class _ReplyMailState extends State<ReplyMail> {
             moveEmails("2");
           },
           child: const ListTile(
-              leading: const Icon(Icons.archive_outlined),
-              title: const Text("Archive")),
+              leading: Icon(Icons.archive_outlined), title: Text("Archive")),
         ),
         InkWell(
             onTap: () {
@@ -247,8 +220,7 @@ class _ReplyMailState extends State<ReplyMail> {
             moveEmails("4");
           },
           child: const ListTile(
-              leading: const Icon(Icons.delete_outlined),
-              title: const Text("Delete")),
+              leading: Icon(Icons.delete_outlined), title: Text("Delete")),
         ),
         InkWell(
           onTap: () {

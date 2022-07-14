@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pst1/Screens/general_file.dart';
 import 'package:pst1/Widgets/Drawer/DrawerScreens/Drafts.dart';
+import 'package:pst1/models/action.dart';
 import 'package:pst1/providers/db.dart';
 
 import '../HelperClasses/folder_details.dart';
@@ -26,151 +28,186 @@ Widget myDrawer(BuildContext context, int accId, final accmMail) {
             accountName: const Text("PST MAIL HANDLER"),
             accountEmail: Text("$accmMail")),
         for (int i = 0; i < foldersinfo.length; i++)
-          foldersinfo[i].name == "inbox" ||
-                  foldersinfo[i].name == "drafts" ||
-                  foldersinfo[i].name == "Archieve" ||
-                  foldersinfo[i].name == "sent" ||
-                  foldersinfo[i].name == "deleted" ||
-                  foldersinfo[i].name == "junk"
-              ? Container()
-              : Row(
-                  children: [
-                    Expanded(
-                      child: ExpansionTile(
-                          leading: const Icon(Icons.folder_special),
-                          title: Text(foldersinfo[i].name),
-                          children: getChildHirerachy(foldersinfo[i].childrens,
-                              context, foldersinfo[i].id),
-                          trailing: IconButton(
-                              onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (cnt) {
-                                      return AlertDialog(
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (cont) {
-                                                      TextEditingController
-                                                          controller =
-                                                          TextEditingController();
-                                                      return AlertDialog(
-                                                        actions: [
-                                                          const Center(
-                                                              child: Text(
-                                                                  "Enter name ")),
-                                                          TextField(
-                                                            controller:
-                                                                controller,
-                                                          ),
-                                                          TextButton(
-                                                              onPressed:
-                                                                  () async {
-                                                                DBHandler db =
-                                                                    await DBHandler
-                                                                        .getInstnace();
-                                                                await db.insertData(
-                                                                    //    Sdab
-                                                                    // yahan agr id auto ki jaay tu error resolve ho jay ga but
-                                                                    // getNextId is not working for any other folder except accounts
-                                                                    105,
-                                                                    controller.text,
-                                                                    1,
-                                                                    foldersinfo[i].id);
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
+          // foldersinfo[i].name == "inbox" ||
+          //         foldersinfo[i].name == "drafts" ||
+          //         foldersinfo[i].name == "Archieve" ||
+          //         foldersinfo[i].name == "sent" ||
+          //         foldersinfo[i].name == "deleted" ||
+          //         foldersinfo[i].name == "junk"
+          //     ? Container()
+          // :
+          Row(
+            children: [
+              Expanded(
+                child: ExpansionTile(
+                    leading: const Icon(Icons.folder_special),
+                    title: InkWell(
+                        // onLongPress: () {
+                        //   Navigator.of(context).push(MaterialPageRoute(
+                        //       builder: (context) => GeneralScreen(
+                        //             id: foldersinfo[i].id,
+                        //             name: foldersinfo[i].name,
+                        //           )));
+                        // },
+                       
+                        child: Text(foldersinfo[i].name)),
+                    children: getChildHirerachy(
+                        foldersinfo[i].childrens, context, foldersinfo[i].id),
+                    trailing: IconButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (cnt) {
+                                return AlertDialog(
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () async {
+                                          Navigator.of(context).pop();
+                                          showDialog(
+                                              context: context,
+                                              builder: (cont) {
+                                                TextEditingController
+                                                    controller =
+                                                    TextEditingController();
+                                                return AlertDialog(
+                                                  actions: [
+                                                    const Center(
+                                                        child: Text(
+                                                            "Enter name ")),
+                                                    TextField(
+                                                      controller: controller,
+                                                    ),
+                                                    TextButton(
+                                                        onPressed: () async {
+                                                          DBHandler db =
+                                                              await DBHandler
+                                                                  .getInstnace();
+                                                          await db.insertData(
+                                                              //    Sdab
+                                                              // yahan agr id auto ki jaay tu error resolve ho jay ga but
+                                                              // getNextId is not working for any other folder except accounts
+                                                              105,
+                                                              controller.text,
+                                                              1,
+                                                              foldersinfo[i]
+                                                                  .id);
+                                                          // maintaining action table against creating folder
+                                                          EAction a = EAction(
+                                                              action_type:
+                                                                  "folder",
+                                                              action_value:
+                                                                  "create",
+                                                              source_field:
+                                                                  "source_field",
+                                                              destination_field:
+                                                                  "destination_field",
+                                                              TDatetime:
+                                                                  DateTime
+                                                                      .now(),
+                                                              object_id:
+                                                                  foldersinfo[i]
+                                                                      .id);
+                                                          await db
+                                                              .insertActionData(
+                                                                  a);
 
-                                                                showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (con) {
-                                                                      return AlertDialog(
-                                                                        title: const Text(
-                                                                            'Data is inserted..'),
-                                                                        actions: [
-                                                                          TextButton(
-                                                                              onPressed: () {
-                                                                                FolderDetail fd = FolderDetail();
-                                                                                fd.name = controller.text;
-                                                                                foldersinfo[i].childrens.add(fd);
+                                                          Navigator.of(context)
+                                                              .pop();
 
-                                                                                Navigator.of(context).pop();
-                                                                              },
-                                                                              child: const Text('OK'))
-                                                                        ],
-                                                                      );
-                                                                    });
-                                                              },
-                                                              child: const Text(
-                                                                  "Create"))
-                                                        ],
-                                                      );
-                                                    });
-                                              },
-                                              child: const Text("create")),
-                                          TextButton(
-                                              onPressed: () {
-                                                //Navigator.of(context).pop();
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            // PopupDislpay(
-                                                            //     fdetail: InboxPage
-                                                            //         .finfo)
+                                                          showDialog(
+                                                              context: context,
+                                                              builder: (con) {
+                                                                return AlertDialog(
+                                                                  title: const Text(
+                                                                      'Data is inserted..'),
+                                                                  actions: [
+                                                                    TextButton(
+                                                                        onPressed:
+                                                                            () {
+                                                                          FolderDetail
+                                                                              fd =
+                                                                              FolderDetail();
+                                                                          fd.name =
+                                                                              controller.text;
+                                                                          foldersinfo[i]
+                                                                              .childrens
+                                                                              .add(fd);
 
-                                                            PopupDislpay.con(
-                                                                fdetail:
-                                                                    InboxPage
-                                                                        .finfo,
-                                                                index:
-                                                                    foldersinfo[
-                                                                            i]
-                                                                        .id)));
-                                              },
-                                              child: const Text("Move")),
-                                          TextButton(
-                                              onPressed: () async {
-                                                Navigator.of(context).pop();
-                                                DBHandler db = await DBHandler
-                                                    .getInstnace();
-                                                await db.deleteFolder(
-                                                    foldersinfo[i].id);
-                                                Navigator.of(context).pop();
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (cont) {
-                                                      return AlertDialog(
-                                                        title: const Text(
-                                                            'Folder Deleted..'),
-                                                        actions: [
-                                                          TextButton(
-                                                              onPressed: () {
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                              },
-                                                              child: const Text(
-                                                                  "ok"))
-                                                        ],
-                                                      );
-                                                    });
-                                              },
-                                              child: const Text("Delete")),
-                                        ],
-                                      );
-                                    });
-                              },
-                              icon: const Icon(Icons.more_vert))),
-                    ),
-                  ],
-                ),
+                                                                          Navigator.of(context)
+                                                                              .pop();
+                                                                        },
+                                                                        child: const Text(
+                                                                            'OK'))
+                                                                  ],
+                                                                );
+                                                              });
+                                                        },
+                                                        child: const Text(
+                                                            "Create"))
+                                                  ],
+                                                );
+                                              });
+                                        },
+                                        child: const Text("create")),
+                                    TextButton(
+                                        onPressed: () {
+                                          //Navigator.of(context).pop();
+                                          Navigator.of(context)
+                                              .push(MaterialPageRoute(
+                                            builder: (context) =>
+                                                PopupDislpay.con(
+                                                    isMail: false,
+                                                    fdetail: InboxPage.finfo,
+                                                    index: foldersinfo[i].id,
+                                                    selected: []),
+                                          ));
+                                        },
+                                        child: const Text("Move")),
+                                    TextButton(
+                                        onPressed: () async {
+                                          Navigator.of(context).pop();
+                                          DBHandler db =
+                                              await DBHandler.getInstnace();
+                                          await db
+                                              .deleteFolder(foldersinfo[i].id);
+                                          Navigator.of(context).pop();
+                                          showDialog(
+                                              context: context,
+                                              builder: (cont) {
+                                                return AlertDialog(
+                                                  title: const Text(
+                                                      'Folder Deleted..'),
+                                                  actions: [
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: const Text("ok"))
+                                                  ],
+                                                );
+                                              });
+                                          // action table for deleting folder..
+                                          EAction a = EAction(
+                                              action_type: "folder",
+                                              action_value: "delete",
+                                              source_field: "source_field",
+                                              destination_field:
+                                                  "destination_field",
+                                              TDatetime: DateTime.now(),
+                                              object_id: foldersinfo[i].id);
+                                          await db.insertActionData(a);
+                                        },
+                                        child: const Text("Delete")),
+                                  ],
+                                );
+                              });
+                        },
+                        icon: const Icon(Icons.more_vert))),
+              ),
+            ],
+          ),
         GestureDetector(
-          // child: treee,
           child: const ListTile(
             title: Text('Folders'),
             leading: Icon(
@@ -182,7 +219,6 @@ Widget myDrawer(BuildContext context, int accId, final accmMail) {
         ListTile(
             title: const Text('Inbox'),
             leading: IconButton(
-              // Icons.move_to_inbox_sharp,
               color: AppColors.lightblueshade,
               onPressed: () async {
                 DBHandler db = await DBHandler.getInstnace();

@@ -31,7 +31,7 @@ class _DraftsState extends State<Drafts> {
         setState(() {
           while (db.getDB() == null) continue;
           print(db);
-          _printData(1, widget.accId);
+          _printData("Drafts", widget.accId);
           setState(() {});
         });
       }
@@ -47,8 +47,8 @@ class _DraftsState extends State<Drafts> {
     );
   }
 
-  void _printData(int fid, int accId) async {
-    mails = await db.getData(fid, accId);
+  void _printData(String fname, int accId) async {
+    mails = await db.getData(fname, accId);
     print('Printing..Mails..');
     mails.forEach(((element) => print('${element.body}  ${element.fid}')));
     setState(() {});
@@ -190,12 +190,12 @@ class _DraftsState extends State<Drafts> {
                     ),
                     title: Text(
                         '${mails[index].subject}   ${mails[index].fid}  ${mails[index].accountId}  '),
-                    subtitle: Text(
-                      mails[index].body,
-                      style: const TextStyle(
-                        fontSize: 12,
-                      ),
-                    ),
+                    // subtitle: Text(
+                    //   mails[index].body,
+                    //   style: const TextStyle(
+                    //     fontSize: 12,
+                    //   ),
+                    // ),
                     trailing: const Icon(Icons.star_border_outlined),
                   ),
                 ),

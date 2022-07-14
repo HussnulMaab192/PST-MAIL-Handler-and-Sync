@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pst1/Styles/app_colors.dart';
 
+import '../../../Screens/reply_mail.dart';
 import '../../../models/mail.dart';
 import '../../../providers/db.dart';
 
@@ -31,7 +32,7 @@ class _DeleteState extends State<Delete> {
         setState(() {
           while (db.getDB() == null) continue;
           print(db);
-          _printData(4, widget.accId);
+          _printData("Delete", widget.accId);
           setState(() {});
         });
       }
@@ -48,8 +49,8 @@ class _DeleteState extends State<Delete> {
     );
   }
 
-  void _printData(int fid, int accId) async {
-    mails = await db.getData(fid, accId);
+  void _printData(String fname, int accId) async {
+    mails = await db.getData(fname, accId);
     print('Printing..Mails..');
     mails.forEach(((element) => print('${element.body}  ${element.fid}')));
     setState(() {});
@@ -167,6 +168,16 @@ class _DeleteState extends State<Delete> {
             itemCount: mails.length,
             itemBuilder: ((context, index) {
               return InkWell(
+                onTap: () {
+                  // Navigator.of(context).push(MaterialPageRoute(
+                  //     builder: (context) => ReplyMail(
+                  //           mid: mails[index].mid,
+                  //           fid: mails[index].fid,
+                  //           subject: mails[index].subject,
+                  //           body: mails[index].body,
+                  //           sender: mails[index].sender,
+                  //         )));
+                },
                 key: Key(mails[index].mid.toString()),
                 splashColor: Colors.blue,
                 onLongPress: () {
@@ -191,12 +202,12 @@ class _DeleteState extends State<Delete> {
                     ),
                     title: Text(
                         '${mails[index].subject}   ${mails[index].fid}  ${mails[index].accountId} '),
-                    subtitle: Text(
-                      mails[index].body,
-                      style: const TextStyle(
-                        fontSize: 12,
-                      ),
-                    ),
+                    // subtitle: Text(
+                    //   mails[index].body,
+                    //   style: const TextStyle(
+                    //     fontSize: 12,
+                    //   ),
+                    // ),
                     trailing: const Icon(Icons.star_border_outlined),
                   ),
                 ),

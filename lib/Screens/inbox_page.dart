@@ -8,7 +8,6 @@ import 'package:pst1/Screens/globalVariables.dart';
 import 'package:pst1/Screens/reply_mail.dart';
 import 'package:pst1/Screens/textFieldBuilder.dart';
 import 'package:pst1/Styles/app_colors.dart';
-import 'package:pst1/Widgets/ButtonClass.dart';
 import 'package:pst1/Widgets/widgets_drawer_coding.dart';
 import 'package:pst1/models/action.dart';
 import 'package:pst1/models/folder.dart';
@@ -19,14 +18,29 @@ import '../providers/db.dart';
 import 'FirstTimeScreens/registered_account.dart';
 import 'SearchPage.dart';
 import 'global_accounts.dart';
+import 'popup.dart';
 
 class InboxPage extends StatefulWidget {
   DBHandler? db;
   static List<FolderDetail> finfo = [];
   List<FolderDetails> currentFinfo = [];
   dynamic accId;
+  dynamic portNo;
   dynamic accmail;
-  InboxPage({Key? key, this.db, required this.accId, this.accmail})
+  dynamic pswd;
+  dynamic smtp;
+  dynamic accType;
+  InboxPage(
+      {Key? key,
+      this.db,
+      required this.accId,
+      this.accmail,
+      this.pswd,
+      this.smtp,
+      this.portNo,
+      //is waly  port no ki zroorat ni hai...iski jagah neechay mainy smtpPortNo adjust kr lya hai
+      // yh sirf othersServers main kam aay ga!!!!
+      this.accType})
       : super(key: key);
 
   @override
@@ -35,6 +49,8 @@ class InboxPage extends StatefulWidget {
 
 class _InboxPageState extends State<InboxPage> {
   TextEditingController folderController = TextEditingController();
+
+  late int smtpPort;
   late int accId;
   late int folderId;
   late String folderName;
@@ -66,7 +82,7 @@ class _InboxPageState extends State<InboxPage> {
             return;
           }
           print('Ini...');
-          _printData(0, widget.accId ?? 1);
+          _printData('"Inbox"', widget.accId ?? 1);
           // fetchAccountData();
           // print(db);
           // print('Outside loop');
@@ -112,6 +128,18 @@ class _InboxPageState extends State<InboxPage> {
       // _printData(0, widget.accId ?? 1);
       fetchAccountData();
       initData();
+      if (widget.accType == "gmail") {
+        widget.smtp = 'smtp.gmail.com';
+        smtpPort = 465;
+      } else if (widget.accType == "outlook") {
+        widget.smtp = 'smtp-mail.outlook.com';
+        smtpPort = 587;
+      } else if (widget.accType == "yahoo") {
+        widget.smtp = 'smtp.mail.yahoo.com';
+        smtpPort = 465;
+      } else if (widget.accType == "others") {
+        widget.smtp = 'smtp.${widget.accType}.com';
+      }
       setState(() {});
       super.initState();
     }
@@ -121,12 +149,12 @@ class _InboxPageState extends State<InboxPage> {
     });
   }
 
-  void _printData(int fid, int accId) async {
-    mails = await widget.db!.getData(fid, accId);
+  void _printData(String fname, int accId) async {
+    mails = await widget.db!.getData(fname, accId);
     print(mails);
     print('Printing..Mails..');
     mails.forEach(((element) {
-      print('${element.body}  ${element.fid} ${element.accountId}');
+      print('${element.body} ');
     }));
     setState(() {});
   }
@@ -203,7 +231,7 @@ class _InboxPageState extends State<InboxPage> {
             IconButton(
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const RegisteredAccounts()));
+                    builder: (context) => RegisteredAccounts()));
               },
               icon: const Icon(Icons.admin_panel_settings_outlined),
             ),
@@ -232,38 +260,19 @@ class _InboxPageState extends State<InboxPage> {
                                             "${folderController.text} Folder created!"),
                                       );
                                     });
-                                //  showDialog(
-                                //   context: context,
-                                //   builder: (con) {
-                                //     return AlertDialog(
-                                //       title: const Text(
-                                //           'Data is inserted...'),
-                                //       actions: [
-                                //         TextButton(
-                                //             onPressed: () {
-                                //               FolderDetail fd =
-                                //                   FolderDetail();
-                                //               fd.name =
-                                //                   folderController
-                                //                       .text;
-                                //               children[i]
-                                //                   .childrens
-                                //                   .add(fd);
-
-                                //               Navigator.of(
-                                //                       context)
-                                //                   .pop();
-                                //             },
-                                //             child: const Text(
-                                //                 'OK'))
-                                //       ],
-                                //     );
-                                //   });
                               },
                               child: const Text("Create"))
                         ],
                       );
                     });
+
+                EAction a = EAction(
+                    action_type: "folder",
+                    action_value: "create",
+                    source_field: "source_field",
+                    destination_field: "destination_field",
+                    TDatetime: DateTime.now(),
+                    object_id: 107);
               },
               icon: const Icon(Icons.create_new_folder),
             ),
@@ -274,10 +283,45 @@ class _InboxPageState extends State<InboxPage> {
                         itemBuilder: (context) => [
                               PopupMenuItem(
                                   child: GestureDetector(
-                                onTap: (() => showModalBottomSheet(
-                                      context: context,
-                                      builder: ((builder) => bottomSheet()),
-                                    )),
+                                onTap: (() {
+                                  List<Email> selectEmail = mails
+                                      .where((element) => element.Selected)
+                                      .toList();
+                                  mails.removeWhere(
+                                      (element) => element.Selected);
+
+                                  // Navigator.of(context).push(MaterialPageRoute(
+                                  //     builder: (context) => PopupDislpay.con(
+                                  //           fdetail: InboxPage.finfo,
+                                  //           index: -1,
+                                  //           isMail: true,
+                                  //           selected: selectEmail,
+                                  //         )));
+
+                                  for (var element in selectEmail) {
+                                    print("selected mail id is:${element.mid}");
+
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                PopupDislpay.con(
+                                                  fdetail: InboxPage.finfo,
+                                                  index: element.mid,
+                                                  isMail: true,
+                                                  selected: const [],
+                                                )));
+                                    setState(() {});
+                                  }
+                                }
+                                    //192.168.176.177
+                                    //  showModalBottomSheet(
+                                    //       context: context,
+                                    //       builder: ((builder) =>
+                                    //      // bottomSheet()
+                                    //       ),
+                                    //     )
+
+                                    ),
                                 child: Row(
                                   children: const [
                                     Icon(
@@ -383,8 +427,18 @@ class _InboxPageState extends State<InboxPage> {
                 Text('Compose')
               ],
             ),
-            onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const Compose()))),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => Compose(
+                        sender: widget.accId,
+                        portNo: smtpPort,
+                        smtpServer: widget.smtp,
+                        pswd: widget.pswd,
+                        accMail: widget.accmail,
+                        accId: widget.accId,
+                      )));
+          
+            }),
         bottomNavigationBar: ConvexAppBar(
             items: const [
               TabItem(icon: Icons.email),
@@ -410,7 +464,11 @@ class _InboxPageState extends State<InboxPage> {
                         builder: (context) => SearchPage(
                               accId: widget.accId,
                               accMail: widget.accmail,
+                              smtp: widget.smtp,
+                              pswd: widget.pswd,
+                              portNo: widget.portNo,
                             )));
+              
               }
             }),
         body: FutureBuilder(
@@ -441,7 +499,13 @@ class _InboxPageState extends State<InboxPage> {
                                         subject: mails[index].subject,
                                         body: mails[index].body,
                                         sender: mails[index].sender,
+                                        accId: widget.accId,
+                                        accMail: widget.accmail,
+                                        portNo: widget.portNo,
+                                        smtpServer: widget.smtp,
+                                        pswd: widget.pswd,
                                       )));
+                           
                             },
                             key: Key(mails[index].mid.toString()),
                             splashColor: Colors.blue,
@@ -470,14 +534,13 @@ class _InboxPageState extends State<InboxPage> {
                                       ? const Icon(Icons.done)
                                       : Text(mails[index].subject[0]),
                                 ),
-                                title: Text(
-                                    '${mails[index].subject}   ${mails[index].fid} '),
-                                subtitle: Text(
-                                  mails[index].body,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                  ),
-                                ),
+                                title: Text('${mails[index].subject} } '),
+                                // subtitle: Text(
+                                //   mails[index].body,
+                                //   style: const TextStyle(
+                                //     fontSize: 12,
+                                //   ),
+                                // ),
                                 trailing: const Icon(
                                   Icons.star_border_outlined,
                                 ),
@@ -495,94 +558,51 @@ class _InboxPageState extends State<InboxPage> {
             }));
   }
 
-  createNewFolder(BuildContext context, int parent, int folderid) {
-    AlertDialog alert = AlertDialog(
-        backgroundColor: AppColors.lightblueshade,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Container(
-          child: Column(children: [
-            const Text("Enter name of Folder"),
-            TextFormField(
-              controller: folderController,
-              cursorColor: Colors.white,
-              style: const TextStyle(color: Colors.black),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width - 250,
-              child: ButtonClass(
-                  title: "Create",
-                  background: AppColors.blue,
-                  onTap: () {
-                    db.insertData(
-                        folderid, folderController.text.toString(), 2, parent);
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => InboxPage(
-                                  db: widget.db,
-                                  accId: widget.accId,
-                                )));
-                  }),
-            )
-          ]),
-        ));
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
+  // Widget bottomSheet() {
+  //   return Container(
+  //     height: 280.0,
+  //     width: MediaQuery.of(context).size.width,
+  //     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+  //     child:
+  //         Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+  //       InkWell(
+  //         onTap: () {
+  //           moveEmails("1");
+  //         },
+  //         child: const ListTile(
+  //           leading: Icon(Icons.drafts_outlined),
+  //           title: Text("Drafts"),
+  //         ),
+  //       ),
+  //       InkWell(
+  //         onTap: () {
+  //           moveEmails("2");
+  //         },
+  //         child: const ListTile(
+  //             leading: Icon(Icons.archive_outlined), title: Text("Archive")),
+  //       ),
+  //       InkWell(
+  //           onTap: () {
+  //             moveEmails("3");
+  //           },
+  //           child: const ListTile(
+  //               leading: Icon(Icons.send_outlined), title: Text("Send"))),
+  //       InkWell(
+  //         onTap: () {
+  //           moveEmails("4");
+  //         },
+  //         child: const ListTile(
+  //             leading: Icon(Icons.delete_outlined), title: Text("Delete")),
+  //       ),
+  //       InkWell(
+  //         onTap: () {
+  //           moveEmails("5");
+  //         },
+  //         child: const ListTile(
+  //             leading: Icon(Icons.delete_forever_rounded), title: Text("junk")),
+  //       ),
+  //     ]),
+  //   );
+  // }
 
-  Widget bottomSheet() {
-    return Container(
-      height: 280.0,
-      width: MediaQuery.of(context).size.width,
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child:
-          Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-        InkWell(
-          onTap: () {
-            moveEmails("1");
-          },
-          child: const ListTile(
-            leading: Icon(Icons.drafts_outlined),
-            title: Text("Drafts"),
-          ),
-        ),
-        InkWell(
-          onTap: () {
-            moveEmails("2");
-          },
-          child: const ListTile(
-              leading: Icon(Icons.archive_outlined), title: Text("Archive")),
-        ),
-        InkWell(
-            onTap: () {
-              moveEmails("3");
-            },
-            child: const ListTile(
-                leading: Icon(Icons.send_outlined), title: Text("Send"))),
-        InkWell(
-          onTap: () {
-            moveEmails("4");
-          },
-          child: const ListTile(
-              leading: Icon(Icons.delete_outlined), title: Text("Delete")),
-        ),
-        InkWell(
-          onTap: () {
-            moveEmails("5");
-          },
-          child: const ListTile(
-              leading: Icon(Icons.delete_forever_rounded), title: Text("junk")),
-        ),
-      ]),
-    );
-  }
 }

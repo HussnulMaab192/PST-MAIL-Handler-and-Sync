@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pst1/Screens/FirstTimeScreens/registered_account.dart';
 import '../../Styles/app_colors.dart';
 import '../../Widgets/ButtonClass.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../providers/Db.dart';
 import '../global_accounts.dart';
 
@@ -93,7 +91,7 @@ class _ConfigureMyAccountState extends State<ConfigureMyAccount> {
                               Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const RegisteredAccounts()));
+                                          RegisteredAccounts()));
                             })),
                   ],
                 ),

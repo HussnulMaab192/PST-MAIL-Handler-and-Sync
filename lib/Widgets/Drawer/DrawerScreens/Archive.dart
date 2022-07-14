@@ -34,7 +34,7 @@ class _ArchiveState extends State<Archive> {
             continue;
           }
         
-          _printData(2, widget.accId);
+          _printData("Archive", widget.accId);
           setState(() {});
         });
       }
@@ -53,8 +53,8 @@ class _ArchiveState extends State<Archive> {
     super.initState();
   }
 
-  void _printData(int fid, int accId) async {
-    mails = await db.getData(fid, accId);
+  void _printData(String fname, int accId) async {
+    mails = await db.getData(fname, accId);
     print('Printing..Mails..');
     mails.forEach(((element) => print('${element.body}  ${element.fid}')));
     setState(() {});

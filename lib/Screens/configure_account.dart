@@ -15,8 +15,8 @@ class ConfigureAccount extends StatefulWidget {
 }
 
 class _ConfigureAccountState extends State<ConfigureAccount> {
-  String incomingServer = "123";
-  String outgoingServer = "555";
+  late int incomingPort;
+  late int outgoingPort;
   var domainChecker;
   int aid = 0;
   //var selectedAccountType;
@@ -186,8 +186,20 @@ class _ConfigureAccountState extends State<ConfigureAccount> {
                                       mailAddressController.text.split("@");
                                   final validDomain =
                                       domainChecker[1].split(".");
-                                  print("doainchecker is: $domainChecker");
+                                  print("domainchecker is: $domainChecker");
                                   if (validDomain[0] == widget.type) {
+                                    if (widget.type == "gmail") {
+                                      outgoingPort = 465;
+                                      incomingPort = 993; //Imap
+
+                                    } else if (widget.type == "outlook" ||
+                                        widget.type == "Outlook") {
+                                      incomingPort = 993;
+                                      outgoingPort = 587;
+                                    } else if (widget.type == "yahoo") {
+                                      incomingPort = 993;
+                                      outgoingPort = 465;
+                                    }
                                     DBHandler db =
                                         await DBHandler.getInstnace();
 
@@ -196,7 +208,7 @@ class _ConfigureAccountState extends State<ConfigureAccount> {
                                         mailAddressController.text.toString(),
                                         pswdController.text.toString(),
                                         confirmPswdController.text.toString(),
-                                        "gmailServer",
+                                        "smtp",
                                         123,
                                         "Imap",
                                         456);
@@ -206,7 +218,12 @@ class _ConfigureAccountState extends State<ConfigureAccount> {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const RegisteredAccounts()));
+                                                RegisteredAccounts.con(
+                                                    Server: widget.type,
+                                                    incomingPortNo:
+                                                        incomingPort,
+                                                    outgoingPortNo:
+                                                        outgoingPort)));
                                   } else {
                                     showDialog(
                                         context: context,

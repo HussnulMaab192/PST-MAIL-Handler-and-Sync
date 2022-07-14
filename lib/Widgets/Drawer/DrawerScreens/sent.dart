@@ -8,7 +8,7 @@ import '../../../providers/db.dart';
 
 class Sent extends StatefulWidget {
   dynamic accId;
-   Sent({Key? key, accId}) : super(key: key);
+  Sent({Key? key, accId}) : super(key: key);
 
   @override
   State<Sent> createState() => _SentState();
@@ -29,9 +29,10 @@ class _SentState extends State<Sent> {
         print('object created successfuly...');
         db = value;
         setState(() {
-          while (db.getDB() == null) continue;
-          print(db);
-          _printData(3, widget.accId);
+          while (db.getDB() == null) {
+            continue;
+          }
+          _printData('"Sent"', widget.accId);
           setState(() {});
         });
       }
@@ -48,8 +49,8 @@ class _SentState extends State<Sent> {
     );
   }
 
-  void _printData(int fid, int accId) async {
-    mails = await db.getData(fid, accId);
+  void _printData(String fname, int accId) async {
+    mails = await db.getData(fname, accId);
     print('Printing..Mails..');
     mails.forEach(((element) => print('${element.body}  ${element.fid} ')));
     setState(() {});
@@ -189,14 +190,14 @@ class _SentState extends State<Sent> {
                           ? const Icon(Icons.done)
                           : Text(mails[index].subject[0]),
                     ),
-                    title:
-                        Text('${mails[index].subject}   ${mails[index].fid}   ${mails[index].accountId}'),
-                    subtitle: Text(
-                      mails[index].body,
-                      style: const TextStyle(
-                        fontSize: 12,
-                      ),
-                    ),
+                    title: Text(
+                        '${mails[index].subject}   ${mails[index].fid}   ${mails[index].accountId}'),
+                    // subtitle: Text(
+                    //   mails[index].body,
+                    //   style: const TextStyle(
+                    //     fontSize: 12,
+                    //   ),
+                    // ),
                     trailing: Icon(Icons.star_border_outlined),
                   ),
                 ),

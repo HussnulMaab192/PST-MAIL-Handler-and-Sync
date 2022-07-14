@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pst1/Screens/configure_account.dart';
-import 'package:pst1/Screens/inbox_page.dart';
 import 'package:pst1/Screens/selectServer.dart';
 import 'package:pst1/Styles/app_colors.dart';
 import 'package:pst1/Widgets/ButtonClass.dart';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pst1/HelperClasses/folder_details.dart';
 import 'package:pst1/providers/Db.dart';
 
+import '../Screens/general_file.dart';
 import '../Screens/inbox_page.dart';
 import '../Screens/popup.dart';
 
@@ -58,7 +59,7 @@ List<Widget> getChildHirerachy(
               // print('to :' + widget.fdetail[i].id.toString());
               DBHandler db = await DBHandler.getInstnace();
               db.UpdateFolder(index, children[i].id);
-             //  db.updateFolder(widget.index!, widget.fdetail[i].id);
+              //  db.updateFolder(widget.index!, widget.fdetail[i].id);
 
               showDialog(
                   context: context,
@@ -78,7 +79,15 @@ List<Widget> getChildHirerachy(
               //   Navigator.pop(context);
             },
             icon: const Icon(Icons.folder)),
-        title: Text(children[i].name),
+        title: InkWell(
+            onLongPress: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => GeneralScreen(
+                        id: children[i].id,
+                        name: children[i].name,
+                      )));
+            },
+            child: Text(children[i].name)),
         children: getChildHirerachy(children[i].childrens, context, index),
         trailing: IconButton(
             icon: const Icon(Icons.more_vert),
@@ -161,8 +170,11 @@ List<Widget> getChildHirerachy(
                               print(children[i].fid);
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) => PopupDislpay.con(
-                                      fdetail: InboxPage.finfo,
-                                      index: children[i].id)));
+                                        fdetail: InboxPage.finfo,
+                                        index: children[i].id,
+                                        isMail: false,
+                                        selected: [],
+                                      )));
                             },
                             child: const Text("Move")),
                         TextButton(

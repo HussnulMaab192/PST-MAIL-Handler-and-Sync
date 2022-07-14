@@ -14,6 +14,8 @@ Widget buildTextField(
         child: TextFormField(
           controller: controller,
           obscureText: isPassword,
+          
+          maxLines: null,
           validator: (value) {
             if (value!.isEmpty) {
               if (hintText == "User Name") {
@@ -39,8 +41,9 @@ Widget buildTextField(
               }
             }
           },
-          keyboardType:
-              isEmail ? TextInputType.emailAddress : TextInputType.text,
+          // keyboardType:
+          //     isEmail ? TextInputType.emailAddress  : TextInputType.text,
+          keyboardType: TextInputType.multiline,
           decoration: InputDecoration(
             prefixIcon: Icon(
               icon,

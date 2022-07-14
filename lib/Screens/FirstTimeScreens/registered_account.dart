@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pst1/Screens/FirstTimeScreens/client.dart';
+import 'package:pst1/Screens/contacts_data.dart';
 import 'package:pst1/Screens/inbox_page.dart';
 import 'package:pst1/Screens/selectServer.dart';
 import 'package:pst1/providers/db.dart';
@@ -8,10 +9,19 @@ import '../../Styles/app_colors.dart';
 import '../global_accounts.dart';
 
 class RegisteredAccounts extends StatefulWidget {
-  const RegisteredAccounts({
+  late String Server;
+  var incomingPortNo;
+  var outgoingPortNo;
+  RegisteredAccounts({
     Key? key,
   }) : super(key: key);
-
+  RegisteredAccounts.con({
+    Key? key,
+    // ignore: non_constant_identifier_names
+    required this.Server,
+    required this.incomingPortNo,
+    required this.outgoingPortNo,
+  }) : super(key: key);
   @override
   State<RegisteredAccounts> createState() => _RegisteredAccountsState();
 }
@@ -20,6 +30,7 @@ class _RegisteredAccountsState extends State<RegisteredAccounts> {
   @override
   void initState() {
     fetchAccountData();
+
     super.initState();
   }
 
@@ -83,6 +94,11 @@ class _RegisteredAccountsState extends State<RegisteredAccounts> {
                                                 .accountsList![index].acc_id,
                                             accmail: GlobalList
                                                 .accountsList![index].acc_mail,
+                                            accType: GlobalList
+                                                .accountsList![index].acc_type,
+                                            pswd: GlobalList
+                                                .accountsList![index].acc_pswd,
+                                            portNo: widget.incomingPortNo,
                                           )));
                                 },
                                 child: ListTile(
@@ -99,7 +115,11 @@ class _RegisteredAccountsState extends State<RegisteredAccounts> {
                                         Navigator.of(context).push(
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    SocketClient()));
+                                                    SocketClient(
+                                                      mailId: GlobalList
+                                                          .accountsList![index]
+                                                          .acc_mail,
+                                                    )));
                                       },
                                       icon: const Icon(Icons.sync_alt)),
                                 ),
